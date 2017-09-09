@@ -42,7 +42,7 @@
   import TypingIndicator from './TypingIndicator'
 
   export default {
-    name: 'Widget',
+    name: 'ChatWidget',
     components: {
       ChatMessage,
       TypingIndicator

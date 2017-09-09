@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "vue": "^2.4.2",
-    "vue-timeago": "3.3.6"
+    "vue-timeago": "3.3.6",
+    "chat-adapter-actioncable": "0.0.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
