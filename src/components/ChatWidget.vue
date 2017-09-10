@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div :class="classObject">
     <transition name="fade">
-      <div id="chat-121" v-if="isOpen">
+      <div id="chat-121" v-show="isOpen || isEmbedded">
         <header class="clearfix" @click="isOpen = !isOpen">
           <a href="#" class="chat-close">X</a>
           <h4>{{params.remotePartyName}}</h4>
@@ -28,12 +28,14 @@
         </div>
       </div>
     </transition>
-    <transition name="fade">
-      <div id="chat-121-avatar" v-if="!isOpen">
-        <span class="chat-message-counter" v-if="unreadCount > 0">{{unreadCount}}</span>
-        <img src="../assets/diego-blink.gif" @click="isOpen = !isOpen"/>
-      </div>
-    </transition>
+    <template v-if="!isEmbedded">
+      <transition name="fade">
+        <div id="chat-121-avatar" v-show="!isOpen">
+          <span class="chat-message-counter" v-if="unreadCount > 0">{{unreadCount}}</span>
+          <img src="../assets/diego-blink.gif" @click="isOpen = !isOpen"/>
+        </div>
+      </transition>
+    </template>
   </div>
 </template>
 
@@ -53,6 +55,23 @@
       }
       if (this.$refs.textArea !== undefined) {
         this.$refs.textArea.focus()
+      }
+    },
+    props: {
+      position: {
+        default: 'bottom-rigth',
+        type: String
+      }
+    },
+    computed: {
+      classObject () {
+        return {
+          'bottom-rigth': (this.position.toLowerCase() === 'bottom-rigth'),
+          'embedded': (this.position.toLowerCase() === 'embedded')
+        }
+      },
+      isEmbedded () {
+        return (this.position.toLowerCase() === 'embedded')
       }
     },
     methods: {
@@ -200,10 +219,17 @@
 
   /* ---------- 121-CHAT ---------- */
 
-  #chat-121 {
+  .bottom-rigth {
     position: fixed;
     bottom: 0;
     right: 0;
+  }
+
+  .embedded {
+    position: inherit;
+  }
+
+  #chat-121 {
     width: 300px;
     height: 500px;
     font-size: 12px;

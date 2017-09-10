@@ -12,13 +12,19 @@ console.log(adapter.name)
 console.log(adapter.ping())
 
 export function init (config) {
-  this._name = 'UniversalChatWidget'
-  Vue.config.productionTip = false
   // Package name UniversalChatWidget defined in webpack.base.conf.js to be able to use window.UniversalChatWidget
+  this._name = 'UniversalChatWidget'
+  this._template = '<chat-widget/>'
+
+  if (config.position === 'embedded') {
+    this._template = `<chat-widget position="embedded"/>`
+  }
+  Vue.config.productionTip = false
+
   /* eslint-disable no-new */
   new Vue({
-    el: config,
-    template: '<chat-widget/>',
+    el: config.element,
+    template: this._template,
     components: {ChatWidget}
   })
 }
