@@ -57,6 +57,11 @@
         this.$refs.textArea.focus()
       }
     },
+    created: function () {
+      if (window) {
+        window.ChatWidget = this
+      }
+    },
     props: {
       position: {
         default: 'bottom-rigth',
@@ -95,6 +100,13 @@
           textArea.blur()
 //          this.isTyping = false
         }
+      },
+//    This component API methods
+      open () {
+        this.isOpen = true
+      },
+      close () {
+        this.isOpen = false
       }
     },
     data () {

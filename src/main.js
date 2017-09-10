@@ -2,30 +2,32 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import ChatWidget from './components/ChatWidget.vue'
-
 import ChatAdapterActionCable from 'chat-adapter-actioncable'
 
-var adapter = new ChatAdapterActionCable()
-
-console.log(adapter)
-console.log(adapter.name)
-console.log(adapter.ping())
-
-export function init (config) {
+export function Widget (config) {
   // Package name UniversalChatWidget defined in webpack.base.conf.js to be able to use window.UniversalChatWidget
-  this._name = 'UniversalChatWidget'
-  this._template = '<chat-widget/>'
+  // var _name = 'UniversalChatWidget'
+  let _template = '<chat-widget/>'
+  let _adapter = new ChatAdapterActionCable()
+  console.log(_adapter)
+
+  // init (element, position, appToken)
+  // rid of element. Use body. add div
 
   if (config.position === 'embedded') {
-    this._template = `<chat-widget position="embedded"/>`
+    _template = `<chat-widget position="embedded"/>`
   }
   Vue.config.productionTip = false
 
   /* eslint-disable no-new */
-  new Vue({
+  let _widget = new Vue({
     el: config.element,
-    template: this._template,
+    template: _template,
     components: {ChatWidget}
   })
-}
 
+  this.open = function () {
+    console.log(_widget)
+    _widget.vue.open()
+  }
+}
