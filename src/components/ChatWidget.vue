@@ -1,16 +1,17 @@
 <template>
   <div :class="classObject">
     <transition name="fade">
-      <div id="chat-121" v-show="isOpen || isEmbedded">
-        <header class="clearfix" @click="isOpen = !isOpen">
-          <a href="#" class="chat-close">X</a>
+      <div id="chat-121" v-show="isVisible">
+        <header class="clearfix" @click="toggleVisibility">
+          <a v-if="!isEmbedded" href="#" class="chat-close">X</a>
           <h4>{{displayName}}</h4>
         </header>
         <div class="chat">
           <div class="chat-history" ref="chatHistory">
             {{newUsersIntro}}
-            <chat-message v-for="message in messages" :key="message.id" :message="message" :showAvatar="showAvatars"></chat-message>
-            <typing-indicator v-if="isTyping"></typing-indicator>
+            <chat-message v-for="message in messages" :key="message.id" :message="message"
+                          :showAvatar="showAvatars"></chat-message>
+            <typing-indicator v-if="isTyping && isVisible"></typing-indicator>
           </div>
           <div class="inputs">
             <textarea placeholder="Type your message…" ref="textArea" @keydown="handleInput"/>
@@ -33,7 +34,7 @@
       <transition name="fade">
         <div id="chat-121-avatar" v-show="!isOpen">
           <span class="chat-message-counter" v-if="unreadCount > 0">{{unreadCount}}</span>
-          <img :src=avatarUrl @click="isOpen = !isOpen"/>
+          <img :src=avatarUrl @click="toggleVisibility"/>
         </div>
       </transition>
     </template>
@@ -60,8 +61,8 @@
     },
     props: {
       position: {
-        default: 'bottom-right',
-        type: String
+        type: String,
+        default: 'bottom-right'
       },
       showAvatars: {
         type: Boolean,
@@ -72,20 +73,35 @@
         default: true
       },
       name: {
-        default: 'chat',
-        type: String
+        type: String,
+        default: 'chat'
       },
       displayName: {
-        default: 'Chat',
-        type: String
+        type: String,
+        default: 'Chat'
       },
       avatarUrl: {
-        default: 'https://storage.googleapis.com/static-121/diego-blink.gif',
-        type: String
+        type: String,
+        default: 'https://storage.googleapis.com/static-121/diego-blink.gif'
       },
       newUsersIntro: {
-        default: '',
-        type: String
+        type: String,
+        default: ''
+      },
+      messages: {
+        type: Array
+      },
+      isOpen: {
+        type: Boolean,
+        default: false
+      },
+      isTyping: {
+        type: Boolean,
+        default: false
+      },
+      unreadCount: {
+        type: Number,
+        default: 0
       }
     },
     computed: {
@@ -97,9 +113,17 @@
       },
       isEmbedded () {
         return (this.position.toLowerCase() === 'embedded')
+      },
+      isVisible () {
+        return (this.isOpen || this.position.toLowerCase() === 'embedded')
       }
     },
     methods: {
+      toggleVisibility () {
+        if (!(this.position.toLowerCase() === 'embedded')) {
+          this.$emit('toggleVisibility')
+        }
+      },
       trigger () {
         this.$refs.fileInput.click()
       },
@@ -118,67 +142,8 @@
           textArea.value = ''
           textArea.setSelectionRange(0, 0)
           textArea.blur()
-//          this.isTyping = false
+//        this.isTyping = false
         }
-      },
-//    This component API methods
-      open () {
-        this.isOpen = true
-      },
-      close () {
-        this.isOpen = false
-      }
-    },
-    data () {
-      const now = new Date().getTime()
-
-      return {
-        isOpen: false,
-        unreadCount: 12,
-        isTyping: false,
-        messages: [
-          {
-            time: now - 600000000,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '1'
-          },
-          {
-            time: now - 60000000,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '2'
-          },
-          {
-            time: now - 6000000,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '1'
-          },
-          {
-            time: now - 600000,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '2'
-          },
-          {
-            time: now - 600000,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '2'
-          },
-          {
-            time: now - 600000,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '1'
-          },
-          {
-            time: now,
-            from: 'Tom Anderson',
-            text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            direction: '2'
-          }]
       }
     }
   }
@@ -243,17 +208,6 @@
     cursor: pointer;
     padding: 12px 24px;
   }
-
-  /*!* green dot *!*/
-  /*#chat-121 h4:before {*/
-  /*background: #1a8a34;*/
-  /*border-radius: 50%;*/
-  /*content: "";*/
-  /*display: inline-block;*/
-  /*height: 8px;*/
-  /*margin: 0 8px 0 0;*/
-  /*width: 8px;*/
-  /*}*/
 
   #chat-121 h4 {
     font-size: 12px;

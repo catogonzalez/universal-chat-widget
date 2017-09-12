@@ -111,7 +111,6 @@ export function Widget (config) {
                 }
               }
               if (json.allow_uploads !== undefined) {
-                console.log('json.allow_uploads NOT NULL', json.allow_uploads)
                 // allowUploads: whatever comes from the backend superseeds the initial config of the widget
                 if (json.allow_uploads === 'false' || json.allow_uploads === false) {
                   widgetConfig.allowUploads = false
@@ -121,7 +120,13 @@ export function Widget (config) {
                   _widgetData.allowUploads = true
                 }
               }
-              render(deepmerge(widgetConfig, _widgetData))
+              if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
+                // use fake messages in development when there are no messages
+                widgetConfig.lastMessages = devMessages()
+              }
+              widgetConfig = deepmerge(widgetConfig, _widgetData)
+              console.log('widgetConfig =', widgetConfig)
+              render(widgetConfig)
             })
           } else {
             render('HTTP error: ' + response.status)
@@ -136,13 +141,18 @@ export function Widget (config) {
     if (typeof params === 'object') {
       // params contains properties to render the chat widget
       var _template = `<chat-widget ref="widget"
-      position="${params.position || 'bottom-rigth'}"
-      name="${params.name}"
-      displayName="${params.displayName}"
-      :showAvatars="${params.showAvatars}"
-      :allowUploads="${params.allowUploads}"
-      avatarUrl="${params.avatarUrl}"
-      newUsersIntro="${params.newUsersIntro}"/>
+      @toggleVisibility="toggleVisibility"
+      :position="position"
+      :name="name"
+      :displayName="displayName"
+      :showAvatars="showAvatars"
+      :allowUploads="allowUploads"
+      :avatarUrl="avatarUrl"
+      :newUsersIntro="newUsersIntro"
+      :messages="messages"
+      :isOpen="isOpen"
+      :isTyping="isTyping"
+      :unreadCount="unreadCount"/>
       </chat-widget>`
 
       Vue.config.productionTip = false
@@ -150,9 +160,26 @@ export function Widget (config) {
       var _parent = new Vue({
         el: params.element,
         template: _template,
-        components: {ChatWidget}
+        components: {ChatWidget},
+        data: {
+          position: params.position || 'bottom-right',
+          name: params.name,
+          displayName: params.displayName,
+          showAvatars: params.showAvatars,
+          allowUploads: params.allowUploads,
+          avatarUrl: params.avatarUrl,
+          newUsersIntro: params.newUsersIntro,
+          messages: params.lastMessages,
+          isOpen: false,
+          isTyping: false,
+          unreadCount: 0
+        },
+        methods: {
+          toggleVisibility () {
+            this.isOpen = !this.isOpen
+          }
+        }
       })
-
       _widget = _parent.$refs.widget
     } else {
 
@@ -182,6 +209,56 @@ export function Widget (config) {
         ':' + pad(now.getSeconds()) +
         dif + pad(tzo / 60) +
         ':' + pad(tzo % 60)
+  }
+
+  // use fake messages in development when there are no messages
+  function devMessages () {
+    // collection of messages to use in development if messages is empty
+    const now = new Date().getTime()
+
+    return [
+      {
+        time: now - 600000000,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '1'
+      },
+      {
+        time: now - 60000000,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '2'
+      },
+      {
+        time: now - 6000000,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '1'
+      },
+      {
+        time: now - 600000,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '2'
+      },
+      {
+        time: now - 600000,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '2'
+      },
+      {
+        time: now - 600000,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '1'
+      },
+      {
+        time: now,
+        from: 'Tom Anderson',
+        text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+        direction: '2'
+      }]
   }
 
   //
