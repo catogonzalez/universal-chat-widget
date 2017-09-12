@@ -39,7 +39,8 @@ export function Widget (config) {
   var _widgetData = {
     position: config.position,
     element: config.element,
-    showAvatars: config.showAvatars
+    showAvatars: config.showAvatars,
+    allowUploads: config.allowUploads
   }
 
   // TODO: *adapter.instance: Instance of ChatAdapter{ActionCable}
@@ -99,11 +100,27 @@ export function Widget (config) {
                 lastMessages: json.last_messages || []
                 //  TODO: parse newusersintro
               }
-              if (json.show_avatars && (json.show_avatars === 'false' || json.show_avatars === false)) {
-                widgetConfig.showAvatars = false
-                _widgetData.showAvatars = false
+              if (json.show_avatars !== undefined) {
+                // showAvatars: whatever comes from the backend superseeds the initial config of the widget
+                if (json.show_avatars === 'false' || json.show_avatars === false) {
+                  widgetConfig.showAvatars = false
+                  _widgetData.showAvatars = false
+                } else {
+                  widgetConfig.showAvatars = true
+                  _widgetData.showAvatars = true
+                }
               }
-
+              if (json.allow_uploads !== undefined) {
+                console.log('json.allow_uploads NOT NULL', json.allow_uploads)
+                // allowUploads: whatever comes from the backend superseeds the initial config of the widget
+                if (json.allow_uploads === 'false' || json.allow_uploads === false) {
+                  widgetConfig.allowUploads = false
+                  _widgetData.allowUploads = false
+                } else {
+                  widgetConfig.allowUploads = true
+                  _widgetData.allowUploads = true
+                }
+              }
               render(deepmerge(widgetConfig, _widgetData))
             })
           } else {
@@ -123,11 +140,11 @@ export function Widget (config) {
       name="${params.name}"
       displayName="${params.displayName}"
       :showAvatars="${params.showAvatars}"
+      :allowUploads="${params.allowUploads}"
       avatarUrl="${params.avatarUrl}"
       newUsersIntro="${params.newUsersIntro}"/>
       </chat-widget>`
 
-      console.log(_template)
       Vue.config.productionTip = false
       /* eslint-disable no-new */
       var _parent = new Vue({

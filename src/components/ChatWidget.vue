@@ -14,7 +14,7 @@
           </div>
           <div class="inputs">
             <textarea placeholder="Type your message…" ref="textArea" @keydown="handleInput"/>
-            <button class="upload" @click="trigger">
+            <button v-if="allowUploads" class="upload" @click="trigger">
               <input class="upload-input" type="file" ref="fileInput"/>
               <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
                 <path fill="none" fill-rule="evenodd" stroke="#212126"
@@ -64,6 +64,10 @@
         type: String
       },
       showAvatars: {
+        type: Boolean,
+        default: true
+      },
+      allowUploads: {
         type: Boolean,
         default: true
       },
@@ -130,7 +134,7 @@
 
       return {
         isOpen: false,
-        unreadCount: 1,
+        unreadCount: 12,
         isTyping: false,
         messages: [
           {
