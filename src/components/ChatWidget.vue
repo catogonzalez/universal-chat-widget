@@ -4,15 +4,16 @@
       <div id="chat-121" v-show="isOpen || isEmbedded">
         <header class="clearfix" @click="isOpen = !isOpen">
           <a href="#" class="chat-close">X</a>
-          <h4>{{params.remotePartyName}}</h4>
+          <h4>{{displayName}}</h4>
         </header>
         <div class="chat">
           <div class="chat-history" ref="chatHistory">
+            {{newUsersIntro}}
             <chat-message v-for="message in messages" :key="message.id" :message="message"></chat-message>
             <typing-indicator v-if="isTyping"></typing-indicator>
           </div>
           <div class="inputs">
-            <textarea id="pepe" placeholder="Type your message…" ref="textArea" @keydown="handleInput"/>
+            <textarea placeholder="Type your message…" ref="textArea" @keydown="handleInput"/>
             <button class="upload" @click="trigger">
               <input class="upload-input" type="file" ref="fileInput"/>
               <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
@@ -32,7 +33,7 @@
       <transition name="fade">
         <div id="chat-121-avatar" v-show="!isOpen">
           <span class="chat-message-counter" v-if="unreadCount > 0">{{unreadCount}}</span>
-          <img src="../assets/diego-blink.gif" @click="isOpen = !isOpen"/>
+          <img :src=avatarUrl @click="isOpen = !isOpen"/>
         </div>
       </transition>
     </template>
@@ -57,21 +58,32 @@
         this.$refs.textArea.focus()
       }
     },
-    created: function () {
-      if (window) {
-        window.ChatWidget = this
-      }
-    },
     props: {
       position: {
-        default: 'bottom-rigth',
+        default: 'bottom-right',
+        type: String
+      },
+      name: {
+        default: 'chat',
+        type: String
+      },
+      displayName: {
+        default: 'Chat',
+        type: String
+      },
+      avatarUrl: {
+        default: 'https://storage.googleapis.com/static-121/diego-blink.gif',
+        type: String
+      },
+      newUsersIntro: {
+        default: '',
         type: String
       }
     },
     computed: {
       classObject () {
         return {
-          'bottom-rigth': (this.position.toLowerCase() === 'bottom-rigth'),
+          'bottom-right': (this.position.toLowerCase() === 'bottom-right'),
           'embedded': (this.position.toLowerCase() === 'embedded')
         }
       },
@@ -113,7 +125,6 @@
       const now = new Date().getTime()
 
       return {
-        params: {remotePartyName: '121 Chat'},
         isOpen: false,
         unreadCount: 1,
         isTyping: false,
@@ -169,30 +180,9 @@
 <style scoped>
   /* ---------- GENERAL ---------- */
 
-  body {
-    background: #e9e9e9;
-    color: #9a9a9a;
-    font: 100%/1.5em "Droid Sans", sans-serif;
-    margin: 0;
-  }
-
-  a {
-    text-decoration: none;
-  }
-
   h4, h5 {
     line-height: 1.5em;
     margin: 0;
-  }
-
-  hr {
-    background: #e9e9e9;
-    border: 0;
-    -moz-box-sizing: content-box;
-    box-sizing: content-box;
-    height: 1px;
-    margin: 0;
-    min-height: 1px;
   }
 
   img {
@@ -200,19 +190,6 @@
     display: block;
     height: auto;
     max-width: 100%;
-  }
-
-  input {
-    border: 0;
-    color: inherit;
-    font-family: inherit;
-    font-size: 100%;
-    line-height: normal;
-    margin: 0;
-  }
-
-  p {
-    margin: 0;
   }
 
   .clearfix {
@@ -231,7 +208,7 @@
 
   /* ---------- 121-CHAT ---------- */
 
-  .bottom-rigth {
+  .bottom-right {
     position: fixed;
     bottom: 0;
     right: 0;
@@ -248,6 +225,7 @@
     z-index: 0;
     display: flex;
     flex-direction: column;
+    font-family: Raleway, Arial, Helvetica, sans-serif;
   }
 
   #chat-121 header {
@@ -293,6 +271,7 @@
     top: 0;
     width: 28px;
     z-index: -10;
+    font-family: Raleway, Arial, Helvetica, sans-serif;
   }
 
   #chat-121 .chat-close {
@@ -307,6 +286,7 @@
     margin: 2px 0 0 0;
     text-align: center;
     width: 16px;
+    text-decoration: none;
   }
 
   #chat-121 .chat-close:hover {
@@ -369,6 +349,8 @@
     right: 0;
     cursor: pointer;
     z-index: 0;
+    max-width: 58px;
+    height: auto;
   }
 
   #chat-121 .powered-by {
