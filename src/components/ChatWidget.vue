@@ -9,7 +9,7 @@
         <div class="chat">
           <div class="chat-history" ref="chatHistory">
             {{newUsersIntro}}
-            <chat-message v-for="message in messages" :key="message.id" :message="message"></chat-message>
+            <chat-message v-for="message in messages" :key="message.id" :message="message" :showAvatar="showAvatars"></chat-message>
             <typing-indicator v-if="isTyping"></typing-indicator>
           </div>
           <div class="inputs">
@@ -62,6 +62,10 @@
       position: {
         default: 'bottom-right',
         type: String
+      },
+      showAvatars: {
+        type: Boolean,
+        default: true
       },
       name: {
         default: 'chat',

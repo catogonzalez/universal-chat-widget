@@ -36,9 +36,10 @@ export function Widget (config) {
   //
 
   var _widget
-  var widgetData = {
+  var _widgetData = {
     position: config.position,
-    element: config.element
+    element: config.element,
+    showAvatars: config.showAvatars
   }
 
   // TODO: *adapter.instance: Instance of ChatAdapter{ActionCable}
@@ -52,15 +53,14 @@ export function Widget (config) {
     // check if config data provides a user.id
     if (_adapterConfig && _adapterConfig.initData && _adapterConfig.initData.data && _adapterConfig.initData.data.user && _adapterConfig.initData.data.user.id) {
       // TODO: implement user-merge in backend, when user.id id provided and localStorage.devideId id already set, user.id should survive the merge
-      self._deviceId = _adapterConfig.initData.data.user.id
+      _deviceId = _adapterConfig.initData.data.user.id
       localStorage.setItem('ucwDeviceId', self._deviceId)
       initAdapter()
     } else {
       // register new device:
       // build deviceId from Fingerprint2
-      var self = this
       new Fingerprint2().get(function (result) {
-        self._deviceId = result
+        _deviceId = result
         localStorage.setItem('ucwDeviceId', result)
         initAdapter()
       })
@@ -95,10 +95,16 @@ export function Widget (config) {
                 displayName: json.display_name || 'Chat',
                 avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
                 newUsersIntro: json.new_users_intro || '',
+                user: json.user || {id: _deviceId},
                 lastMessages: json.last_messages || []
-              //  TODO: parse newusersintro
+                //  TODO: parse newusersintro
               }
-              render(deepmerge(widgetConfig, widgetData))
+              if (json.show_avatars && (json.show_avatars === 'false' || json.show_avatars === false)) {
+                widgetConfig.showAvatars = false
+                _widgetData.showAvatars = false
+              }
+
+              render(deepmerge(widgetConfig, _widgetData))
             })
           } else {
             render('HTTP error: ' + response.status)
@@ -113,14 +119,15 @@ export function Widget (config) {
     if (typeof params === 'object') {
       // params contains properties to render the chat widget
       var _template = `<chat-widget ref="widget"
-      font="${params.font || 'Raleway'}"
       position="${params.position || 'bottom-rigth'}"
       name="${params.name}"
       displayName="${params.displayName}"
+      :showAvatars="${params.showAvatars}"
       avatarUrl="${params.avatarUrl}"
       newUsersIntro="${params.newUsersIntro}"/>
       </chat-widget>`
 
+      console.log(_template)
       Vue.config.productionTip = false
       /* eslint-disable no-new */
       var _parent = new Vue({

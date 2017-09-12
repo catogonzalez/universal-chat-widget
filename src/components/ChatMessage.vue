@@ -4,7 +4,7 @@
       <timeago :since="message.time" :max-time="3600 * 24" :auto-update="60" :format="formatTime"></timeago>
     </time>
     <div class="chat-entry" :class="{remote: message.direction == 2}">
-      <img class="chat-avatar" src="http://lorempixel.com/32/32/people" alt="" width="32" height="32">
+      <avatar v-if="showAvatar" username="message.from.username" :src="message.from.avatar" :size=32></avatar>
       <p class="message-body message-text">
         {{message.text}}
       </p>
@@ -15,6 +15,7 @@
 <script>
   import Vue from 'vue'
   import VueTimeago from 'vue-timeago'
+  import Avatar from 'vue-avatar/dist/Avatar'
 
   Vue.use(VueTimeago, {
     name: 'timeago',
@@ -26,10 +27,23 @@
 
   export default {
     name: 'ChatMessage',
+    components: {
+      Avatar,
+      VueTimeago
+    },
     data () {
       return {}
     },
-    props: ['message'],
+    props: {
+      message: {
+        default: null,
+        type: Object
+      },
+      showAvatar: {
+        type: Boolean,
+        default: true
+      }
+    },
     methods: {
       formatTime: function (time) {
         const d = new Date(time)
