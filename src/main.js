@@ -120,6 +120,16 @@ export function Widget (config) {
                   _widgetData.allowUploads = true
                 }
               }
+              if (json.is_enabled !== undefined) {
+                // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
+                if (json.is_enabled === 'false' || json.is_enabled === false) {
+                  widgetConfig.isEnabled = false
+                  _widgetData.isEnabled = false
+                } else {
+                  widgetConfig.isEnabled = true
+                  _widgetData.isEnabled = true
+                }
+              }
               if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
                 // use fake messages in development when there are no messages
                 // widgetConfig.lastMessages = devMessages()
@@ -139,9 +149,17 @@ export function Widget (config) {
   }
 
   function render (params) {
-    if (typeof params === 'object') {
-      // params contains properties to render the chat widget
-      var _template = `<chat-widget ref="widget"
+    if (typeof params !== 'object') {
+      console.warn(`App ${_adapterConfig.initData.data.appId} failed to initialize: ${params}`)
+      return false
+    }
+    if (params.isEnabled === false) {
+      console.warn(`App ${_adapterConfig.initData.data.appId} is disabled in the backend. Widget will not show`)
+      return false
+    }
+
+    // params contains properties to render the chat widget
+    var _template = `<chat-widget ref="widget"
       @toggleVisibility="onToggleVisibility"
       @newUserMessage="onNewUserMessage"
       :position="position"
@@ -157,56 +175,53 @@ export function Widget (config) {
       :unreadCount="unreadCount"/>
       </chat-widget>`
 
-      Vue.config.productionTip = false
-      /* eslint-disable no-new */
-      var _parent = new Vue({
-        el: params.element,
-        template: _template,
-        components: {ChatWidget},
-        data: {
-          position: params.position || 'bottom-right',
-          name: params.name,
-          displayName: params.displayName,
-          showAvatars: params.showAvatars,
-          allowUploads: params.allowUploads,
-          avatarUrl: params.avatarUrl,
-          newUsersIntro: params.newUsersIntro,
-          messages: params.lastMessages,
-          isOpen: false,
-          isTyping: false,
-          unreadCount: 0
-        },
-        updated: function () {
-          if (this.messages.length === 0) {
-            var welcome = {
-              time: new Date().getTime(),
-              from: this.displayName,
-              text: this.newUsersIntro,
-              direction: '2'
-            }
-            this.messages.push(welcome)
+    Vue.config.productionTip = false
+    /* eslint-disable no-new */
+    var _parent = new Vue({
+      el: params.element,
+      template: _template,
+      components: {ChatWidget},
+      data: {
+        position: params.position || 'bottom-right',
+        name: params.name,
+        displayName: params.displayName,
+        showAvatars: params.showAvatars,
+        allowUploads: params.allowUploads,
+        avatarUrl: params.avatarUrl,
+        newUsersIntro: params.newUsersIntro,
+        messages: params.lastMessages,
+        isOpen: false,
+        isTyping: false,
+        unreadCount: 0
+      },
+      updated: function () {
+        if (this.messages.length === 0) {
+          var welcome = {
+            time: new Date().getTime(),
+            from: this.displayName,
+            text: this.newUsersIntro,
+            direction: '2'
           }
-        },
-        methods: {
-          onToggleVisibility () {
-            this.isOpen = !this.isOpen
-          },
-          onNewUserMessage (newMessage) {
-            // save it to local collection
-            this.messages.push(newMessage)
-            // and notify backend
-          }
+          this.messages.push(welcome)
         }
-      })
-      _widget = _parent.$refs.widget
-    } else {
-
-    }
+      },
+      methods: {
+        onToggleVisibility () {
+          this.isOpen = !this.isOpen
+        },
+        onNewUserMessage (newMessage) {
+          // save it to local collection
+          this.messages.push(newMessage)
+          // and notify backend
+        }
+      }
+    })
+    _widget = _parent.$refs.widget
   }
 
-  //
-  // helper functions
-  //
+//
+// helper functions
+//
 
   // get an ISO datetime with timezone offset
   function getISODateTimeWithUTCOffset () {
@@ -229,7 +244,7 @@ export function Widget (config) {
         ':' + pad(tzo % 60)
   }
 
-  // use fake messages in development when there are no messages
+// use fake messages in development when there are no messages
   function devMessages () {
     // collection of messages to use in development if messages is empty
     const now = new Date().getTime()
@@ -279,9 +294,9 @@ export function Widget (config) {
       }]
   }
 
-  //
-  // widget API (exposed/public) methods
-  //
+//
+// widget API (exposed/public) methods
+//
   this.open = function () {
     _widget.open()
   }
