@@ -182,7 +182,7 @@ export function Widget (config) {
               time: new Date().getTime(),
               from: this.displayName,
               text: this.newUsersIntro,
-              direction: '1'
+              direction: '2'
             }
             this.messages.push(welcome)
           }
