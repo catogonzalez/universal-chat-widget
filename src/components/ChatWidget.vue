@@ -8,7 +8,6 @@
         </header>
         <div class="chat">
           <div class="chat-history" ref="chatHistory">
-            {{newUsersIntro}}
             <chat-message v-for="message in messages" :key="message.id" :message="message"
                           :showAvatar="showAvatars"></chat-message>
             <typing-indicator v-if="isTyping && isVisible"></typing-indicator>
@@ -137,7 +136,7 @@
               text: textArea.value.trim(),
               direction: '1'
             }
-            this.messages.push(newMessage)
+            this.$emit('newUserMessage', newMessage)
           }
           textArea.value = ''
           textArea.setSelectionRange(0, 0)

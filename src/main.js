@@ -11,10 +11,12 @@ export function Widget (config) {
   // config must be a json object with this configuration
   // *element: css selector of element to replace in DOM
   // position: embedded|*bottom-right
+  // showAvatars: *true|false
+  // allowUploads: *true|false
   // *adapterConfig: Object based on type of adapter. See ChatAdapterActionCable config as an example here:
   //    ChatAdapterActionCable.config:
-  //    *backendUrl: 'http://localhost:3003'
-  //    *initData: {endpoint: '/bots/:id/start',
+  //    *backendUrl: 'http://localhost:3003/web'
+  //    *initData: {endpoint: '/start',
   //                method: 'post',
   //                data: {*appId: YYY,
   //                       startValue,
@@ -32,8 +34,7 @@ export function Widget (config) {
   //                      }
   //
   // sample initilization:
-  // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'embedded', adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/bots/63015c58-13cf-438d-b5d9-d46adcba3139/start', method: 'post',data: {}}}});
-  //
+  // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
 
   var _widget
   var _widgetData = {
@@ -75,16 +76,16 @@ export function Widget (config) {
 
     // We complement _adapterConfig.initData with further data
     var enhancedConfig = {
-      device_iso_datetime: getISODateTimeWithUTCOffset(),
+      deviceIsoDatetime: getISODateTimeWithUTCOffset(),
       language: navigator.language,
-      device_id: _deviceId
+      deviceId: _deviceId
     }
 
     if (_adapterConfig.initData.data === null) {
       _adapterConfig.initData.data = {}
     }
     _adapterConfig.initData.data = deepmerge(_adapterConfig.initData.data, enhancedConfig)
-    console.log('_adapterConfig.initData ', _adapterConfig.initData)
+    // console.log('_adapterConfig.initData ', _adapterConfig.initData)
 
     _adapter.init(_adapterConfig)
         .then(response => {
@@ -98,7 +99,6 @@ export function Widget (config) {
                 newUsersIntro: json.new_users_intro || '',
                 user: json.user || {id: _deviceId},
                 lastMessages: json.last_messages || []
-                //  TODO: parse newusersintro
               }
               if (json.show_avatars !== undefined) {
                 // showAvatars: whatever comes from the backend superseeds the initial config of the widget
@@ -122,10 +122,11 @@ export function Widget (config) {
               }
               if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
                 // use fake messages in development when there are no messages
-                widgetConfig.lastMessages = devMessages()
+                // widgetConfig.lastMessages = devMessages()
+                devMessages()
               }
+
               widgetConfig = deepmerge(widgetConfig, _widgetData)
-              console.log('widgetConfig =', widgetConfig)
               render(widgetConfig)
             })
           } else {
@@ -141,7 +142,8 @@ export function Widget (config) {
     if (typeof params === 'object') {
       // params contains properties to render the chat widget
       var _template = `<chat-widget ref="widget"
-      @toggleVisibility="toggleVisibility"
+      @toggleVisibility="onToggleVisibility"
+      @newUserMessage="onNewUserMessage"
       :position="position"
       :name="name"
       :displayName="displayName"
@@ -174,9 +176,25 @@ export function Widget (config) {
           isTyping: false,
           unreadCount: 0
         },
+        updated: function () {
+          if (this.messages.length === 0) {
+            var welcome = {
+              time: new Date().getTime(),
+              from: this.displayName,
+              text: this.newUsersIntro,
+              direction: '1'
+            }
+            this.messages.push(welcome)
+          }
+        },
         methods: {
-          toggleVisibility () {
+          onToggleVisibility () {
             this.isOpen = !this.isOpen
+          },
+          onNewUserMessage (newMessage) {
+            // save it to local collection
+            this.messages.push(newMessage)
+            // and notify backend
           }
         }
       })
