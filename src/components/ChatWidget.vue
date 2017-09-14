@@ -132,7 +132,6 @@
           if (textArea.value.trim() !== '') {
             var newMessage = {
               time: new Date().getTime(),
-              from: 'Me',
               text: textArea.value.trim(),
               direction: '1'
             }

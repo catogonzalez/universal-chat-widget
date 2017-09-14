@@ -5,6 +5,7 @@ import ChatWidget from './components/ChatWidget.vue'
 import ChatAdapterActionCable from 'chat-adapter-actioncable'
 import Fingerprint2 from 'fingerprintjs2'
 import deepmerge from 'deepmerge'
+import EventEmitter from 'events'
 
 // Package name UniversalChatWidget defined in webpack.base.conf.js to be able to use window.UniversalChatWidget
 export function Widget (config) {
@@ -36,6 +37,7 @@ export function Widget (config) {
   // sample initilization:
   // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
 
+  var _eventBus = new EventEmitter()
   var _widget
   var _widgetData = {
     position: config.position,
@@ -47,6 +49,7 @@ export function Widget (config) {
   // TODO: *adapter.instance: Instance of ChatAdapter{ActionCable}
   var _adapter = new ChatAdapterActionCable()
   var _adapterConfig = config.adapterConfig
+  var _appId = _adapterConfig.initData.data.appId
 
   // retrieve device fingerprint from (browser) local storage
   var _deviceId = localStorage.getItem('ucwDeviceId')
@@ -88,63 +91,57 @@ export function Widget (config) {
     // console.log('_adapterConfig.initData ', _adapterConfig.initData)
 
     _adapter.init(_adapterConfig)
-        .then(response => {
-          if (response.ok) {
-            response.json().then(json => {
-              // console.log(json)
-              var widgetConfig = {
-                name: json.name || 'chat',
-                displayName: json.display_name || 'Chat',
-                avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
-                newUsersIntro: json.new_users_intro || '',
-                user: json.user || {id: _deviceId},
-                lastMessages: json.last_messages || []
-              }
-              if (json.show_avatars !== undefined) {
-                // showAvatars: whatever comes from the backend superseeds the initial config of the widget
-                if (json.show_avatars === 'false' || json.show_avatars === false) {
-                  widgetConfig.showAvatars = false
-                  _widgetData.showAvatars = false
-                } else {
-                  widgetConfig.showAvatars = true
-                  _widgetData.showAvatars = true
-                }
-              }
-              if (json.allow_uploads !== undefined) {
-                // allowUploads: whatever comes from the backend superseeds the initial config of the widget
-                if (json.allow_uploads === 'false' || json.allow_uploads === false) {
-                  widgetConfig.allowUploads = false
-                  _widgetData.allowUploads = false
-                } else {
-                  widgetConfig.allowUploads = true
-                  _widgetData.allowUploads = true
-                }
-              }
-              if (json.is_enabled !== undefined) {
-                // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
-                if (json.is_enabled === 'false' || json.is_enabled === false) {
-                  widgetConfig.isEnabled = false
-                  _widgetData.isEnabled = false
-                } else {
-                  widgetConfig.isEnabled = true
-                  _widgetData.isEnabled = true
-                }
-              }
-              if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
-                // use fake messages in development when there are no messages
-                // widgetConfig.lastMessages = devMessages()
-                devMessages()
-              }
-
-              widgetConfig = deepmerge(widgetConfig, _widgetData)
-              render(widgetConfig)
-            })
-          } else {
-            render('HTTP error: ' + response.status)
+        .then(json => {
+          // console.log(json)
+          var widgetConfig = {
+            name: json.name || 'chat',
+            displayName: json.display_name || 'Chat',
+            avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
+            newUsersIntro: json.new_users_intro || '',
+            user: json.user || {id: _deviceId},
+            lastMessages: json.last_messages || []
           }
+          if (json.show_avatars !== undefined) {
+            // showAvatars: whatever comes from the backend superseeds the initial config of the widget
+            if (json.show_avatars === 'false' || json.show_avatars === false) {
+              widgetConfig.showAvatars = false
+              _widgetData.showAvatars = false
+            } else {
+              widgetConfig.showAvatars = true
+              _widgetData.showAvatars = true
+            }
+          }
+          if (json.allow_uploads !== undefined) {
+            // allowUploads: whatever comes from the backend superseeds the initial config of the widget
+            if (json.allow_uploads === 'false' || json.allow_uploads === false) {
+              widgetConfig.allowUploads = false
+              _widgetData.allowUploads = false
+            } else {
+              widgetConfig.allowUploads = true
+              _widgetData.allowUploads = true
+            }
+          }
+          if (json.is_enabled !== undefined) {
+            // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
+            if (json.is_enabled === 'false' || json.is_enabled === false) {
+              widgetConfig.isEnabled = false
+              _widgetData.isEnabled = false
+            } else {
+              widgetConfig.isEnabled = true
+              _widgetData.isEnabled = true
+            }
+          }
+          if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
+            // use fake messages in development when there are no messages
+            // widgetConfig.lastMessages = devMessages()
+            devMessages()
+          }
+
+          widgetConfig = deepmerge(widgetConfig, _widgetData)
+          render(widgetConfig)
         })
         .catch(error => {
-          render(error.message)
+          render(error)
         })
   }
 
@@ -210,13 +207,27 @@ export function Widget (config) {
           this.isOpen = !this.isOpen
         },
         onNewUserMessage (newMessage) {
+          var data = {
+            type: 'messages',
+            appId: _appId,
+            from: _deviceId
+          }
+          var merged = deepmerge(newMessage, data)
           // save it to local collection
-          this.messages.push(newMessage)
+          this.messages.push(merged)
           // and notify backend
+          _adapter.subscriber.send(merged)
+        },
+        onNewRemoteMessage (newMessage) {
+          this.messages.push(newMessage)
         }
       }
     })
+
     _widget = _parent.$refs.widget
+    _eventBus.on('ucw:newRemoteMessage', (data) => {
+      _widget.onNewRemoteMessage(data)
+    })
   }
 
 //
@@ -298,10 +309,10 @@ export function Widget (config) {
 // widget API (exposed/public) methods
 //
   this.open = function () {
-    _widget.open()
+    _widget.isOpen = true
   }
 
   this.close = function () {
-    _widget.close()
+    _widget.isOpen = false
   }
 }
