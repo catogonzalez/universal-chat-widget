@@ -37,7 +37,6 @@ export function Widget (config) {
   // sample initilization:
   // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
 
-  var _eventBus = new EventEmitter()
   var _widget
   var _widgetData = {
     position: config.position,
@@ -45,6 +44,7 @@ export function Widget (config) {
     showAvatars: config.showAvatars,
     allowUploads: config.allowUploads
   }
+  var _eventBus = new EventEmitter()
 
   // TODO: *adapter.instance: Instance of ChatAdapter{ActionCable}
   var _adapter = new ChatAdapterActionCable()
@@ -79,7 +79,7 @@ export function Widget (config) {
 
     // We complement _adapterConfig.initData with further data
     var enhancedConfig = {
-      deviceIsoDatetime: getISODateTimeWithUTCOffset(),
+      deviceIsoDatetime: new Date().toISOString(),
       language: navigator.language,
       deviceId: _deviceId
     }
@@ -217,43 +217,23 @@ export function Widget (config) {
           this.messages.push(merged)
           // and notify backend
           _adapter.subscriber.send(merged)
-        },
-        onNewRemoteMessage (newMessage) {
-          this.messages.push(newMessage)
         }
       }
     })
 
     _widget = _parent.$refs.widget
-    _eventBus.on('ucw:newRemoteMessage', (data) => {
-      _widget.onNewRemoteMessage(data)
+    _adapter.on('ucw:newRemoteMessage', (data) => {
+      _widget.messages.push(data)
+
+      // re-emit the event in case there are any subscribers attached to our widget
+      console.log('will emit', data)
+      _eventBus.emit('ucw:newRemoteMessage', data)
     })
   }
 
 //
 // helper functions
 //
-
-  // get an ISO datetime with timezone offset
-  function getISODateTimeWithUTCOffset () {
-    function pad (num) {
-      var norm = Math.abs(Math.floor(num))
-      return (norm < 10 ? '0' : '') + norm
-    }
-
-    var now = new Date()
-    var tzo = -now.getTimezoneOffset()
-    var dif = tzo >= 0 ? '+' : '-'
-
-    return now.getFullYear() +
-        '-' + pad(now.getMonth() + 1) +
-        '-' + pad(now.getDate()) +
-        'T' + pad(now.getHours()) +
-        ':' + pad(now.getMinutes()) +
-        ':' + pad(now.getSeconds()) +
-        dif + pad(tzo / 60) +
-        ':' + pad(tzo % 60)
-  }
 
 // use fake messages in development when there are no messages
   function devMessages () {
@@ -314,5 +294,9 @@ export function Widget (config) {
 
   this.close = function () {
     _widget.isOpen = false
+  }
+
+  this.on = function (event, callback) {
+    _eventBus.on(event, callback)
   }
 }

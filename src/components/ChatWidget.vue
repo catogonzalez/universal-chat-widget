@@ -131,7 +131,7 @@
           var textArea = e.target
           if (textArea.value.trim() !== '') {
             var newMessage = {
-              time: new Date().getTime(),
+              time: new Date().toISOString(),
               text: textArea.value.trim(),
               direction: '1'
             }
