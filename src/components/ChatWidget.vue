@@ -7,7 +7,7 @@
           <h4>{{displayName}}</h4>
         </header>
         <div class="chat">
-          <div class="chat-history" ref="chatHistory">
+          <div class="chat-history" ref="chatHistory" @scroll="onScroll">
             <chat-message v-for="message in messages" :key="message.id" :message="message"
                           :showAvatar="showAvatars"></chat-message>
             <typing-indicator v-if="isTyping && isVisible"></typing-indicator>
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+  import uidv4 from 'uuid/v4'
   import ChatMessage from './ChatMessage'
   import TypingIndicator from './TypingIndicator'
 
@@ -52,6 +53,7 @@
     },
     updated: function () {
       if (this.$refs.chatHistory !== undefined) {
+        // scroll to last message
         this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
       }
       if (this.$refs.textArea !== undefined) {
@@ -98,6 +100,10 @@
         type: Boolean,
         default: false
       },
+      messageCount: {
+        type: Number,
+        default: 0
+      },
       unreadCount: {
         type: Number,
         default: 0
@@ -131,6 +137,7 @@
           var textArea = e.target
           if (textArea.value.trim() !== '') {
             var newMessage = {
+              id: uidv4().replace(/-/g, ''),
               time: new Date().toISOString(),
               text: textArea.value.trim(),
               direction: '1'
@@ -141,6 +148,15 @@
           textArea.setSelectionRange(0, 0)
           textArea.blur()
 //        this.isTyping = false
+        }
+      },
+      onScroll (e) {
+        if (e.target.scrollTop === 0) {
+          // see if there are older messages to read from server
+          if (this.messageCount > this.messages.length) {
+            // refresh older messages
+            this.$emit('requestOlderMessages')
+          }
         }
       }
     }

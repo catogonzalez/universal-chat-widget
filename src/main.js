@@ -99,7 +99,8 @@ export function Widget (config) {
             avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
             newUsersIntro: json.new_users_intro || '',
             user: json.user || {id: _deviceId},
-            lastMessages: json.last_messages || []
+            lastMessages: json.last_messages || [],
+            messageCount: json.message_count || 0
           }
           if (json.show_avatars !== undefined) {
             // showAvatars: whatever comes from the backend superseeds the initial config of the widget
@@ -159,6 +160,7 @@ export function Widget (config) {
     var _template = `<chat-widget ref="widget"
       @toggleVisibility="onToggleVisibility"
       @newUserMessage="onNewUserMessage"
+      @requestOlderMessages="onRequestOlderMessages"
       :position="position"
       :name="name"
       :displayName="displayName"
@@ -169,6 +171,7 @@ export function Widget (config) {
       :messages="messages"
       :isOpen="isOpen"
       :isTyping="isTyping"
+      :messageCount="messageCount"
       :unreadCount="unreadCount"/>
       </chat-widget>`
 
@@ -189,6 +192,7 @@ export function Widget (config) {
         messages: params.lastMessages,
         isOpen: false,
         isTyping: false,
+        messageCount: params.messageCount,
         unreadCount: 0
       },
       updated: function () {
@@ -217,6 +221,27 @@ export function Widget (config) {
           this.messages.push(merged)
           // and notify backend
           _adapter.subscriber.send(merged)
+        },
+        onRequestOlderMessages () {
+          if (this.messages[0].time !== undefined && this.messages[0].time !== null && this.messages[0].time.trim() !== '') {
+            var data = {
+              appId: _appId,
+              deviceId: _deviceId,
+              id: this.messages[0].id,
+              time: this.messages[0].time
+            }
+            _adapter.requestOlderMessages(data)
+                .then(response => {
+                  if (response.status === 200) {
+                    this.messages = response.data.concat(this.messages)
+                  } else {
+                    console.error(response)
+                  }
+                })
+                .catch(error => {
+                  console.error(error)
+                })
+          }
         }
       }
     })
@@ -226,7 +251,6 @@ export function Widget (config) {
       _widget.messages.push(data)
 
       // re-emit the event in case there are any subscribers attached to our widget
-      console.log('will emit', data)
       _eventBus.emit('ucw:newRemoteMessage', data)
     })
   }
@@ -242,42 +266,49 @@ export function Widget (config) {
 
     return [
       {
+        id: 1,
         time: now - 600000000,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '1'
       },
       {
+        id: 2,
         time: now - 60000000,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       },
       {
+        id: 3,
         time: now - 6000000,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '1'
       },
       {
+        id: 4,
         time: now - 600000,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       },
       {
+        id: 5,
         time: now - 600000,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       },
       {
+        id: 6,
         time: now - 600000,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '1'
       },
       {
+        id: 7,
         time: now,
         from: 'Tom Anderson',
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',

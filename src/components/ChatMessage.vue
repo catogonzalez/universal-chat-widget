@@ -17,13 +17,18 @@
   import VueTimeago from 'vue-timeago'
   import Avatar from 'vue-avatar/dist/Avatar'
 
+  var locale;
+  locale = navigator.language.startsWith('es') ? 'es-ES' : 'en-US';
+
+
   Vue.use(VueTimeago, {
     name: 'timeago',
-    locale: 'en-US',
+    locale: locale,
     locales: {
-      'en-US': require('vue-timeago/locales/en-US.json')
+      'en-US': require('vue-timeago/locales/en-US.json'),
+      'es-ES': require('vue-timeago/locales/es-ES.json')
     }
-  })
+  });
 
   export default {
     name: 'ChatMessage',
@@ -46,7 +51,7 @@
     },
     methods: {
       formatTime: function (time) {
-        const d = new Date(time)
+        const d = new Date(time);
         return d.toLocaleString()
       }
     }
