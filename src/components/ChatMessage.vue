@@ -5,10 +5,15 @@
     </time>
     <div class="chat-entry" :class="{remote: message.direction == 2}">
       <avatar v-if="showAvatar" username="message.from.username" :src="message.from.avatar" :size=32></avatar>
-      <p class="message-body message-text">
+      <p v-if="message.text !== null && message.text.trim() !==''" class="message-body message-text">
         {{message.text}}
       </p>
     </div>
+    <chat-carousel v-if="message.elements !== undefined && message.elements !== null && message.elements !==''"
+                   :slides="message.elements"></chat-carousel>
+    <chat-buttons v-if="message.buttons !== undefined && message.buttons !== null && message.buttons !==''"
+                  :buttons="message.buttons"
+                  @postback="onPostback"></chat-buttons>
   </div>
 </template>
 
@@ -16,10 +21,11 @@
   import Vue from 'vue'
   import VueTimeago from 'vue-timeago'
   import Avatar from 'vue-avatar/dist/Avatar'
+  import ChatCarousel from './ChatCarousel'
+  import ChatButtons from './ChatButtons'
 
-  var locale;
-  locale = navigator.language.startsWith('es') ? 'es-ES' : 'en-US';
-
+  var locale
+  locale = navigator.language.startsWith('es') ? 'es-ES' : 'en-US'
 
   Vue.use(VueTimeago, {
     name: 'timeago',
@@ -28,13 +34,15 @@
       'en-US': require('vue-timeago/locales/en-US.json'),
       'es-ES': require('vue-timeago/locales/es-ES.json')
     }
-  });
+  })
 
   export default {
     name: 'ChatMessage',
     components: {
       Avatar,
-      VueTimeago
+      VueTimeago,
+      ChatCarousel,
+      ChatButtons
     },
     data () {
       return {}
@@ -51,8 +59,12 @@
     },
     methods: {
       formatTime: function (time) {
-        const d = new Date(time);
+        const d = new Date(time)
         return d.toLocaleString()
+      },
+      onPostback: function (data) {
+        // re-emit the event for the parent element to handle
+        this.$emit('postback', data)
       }
     }
   }

@@ -8,8 +8,11 @@
         </header>
         <div class="chat">
           <div class="chat-history" ref="chatHistory" @scroll="onScroll">
-            <chat-message v-for="message in messages" :key="message.id" :message="message"
-                          :showAvatar="showAvatars"></chat-message>
+            <chat-message v-for="message in messages" :key="message.id"
+                          :message="message"
+                          :showAvatar="showAvatars"
+                          @postback="onPostback">
+            </chat-message>
             <typing-indicator v-if="isTyping && isVisible"></typing-indicator>
           </div>
           <div class="inputs">
@@ -148,6 +151,9 @@
           textArea.setSelectionRange(0, 0)
           textArea.blur()
 //        this.isTyping = false
+
+          // scroll to last message
+          this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
         }
       },
       onScroll (e) {
@@ -158,6 +164,17 @@
             this.$emit('requestOlderMessages')
           }
         }
+      },
+      onPostback: function (data) {
+        // a button action was triggered in a message or carousel
+        var newMessage = {
+          id: uidv4().replace(/-/g, ''),
+          time: new Date().toISOString(),
+          text: data.text,
+          userAction: data.userAction,
+          direction: '1'
+        }
+        this.$emit('newUserMessage', newMessage)
       }
     }
   }
@@ -206,13 +223,15 @@
   }
 
   #chat-121 {
-    width: 300px;
-    height: 500px;
+    width: 350px;
+    height: 550px;
     font-size: 12px;
     z-index: 0;
     display: flex;
     flex-direction: column;
     font-family: Raleway, Arial, Helvetica, sans-serif;
+    background-color: #f5f7fa;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   }
 
   #chat-121 header {
@@ -275,7 +294,7 @@
   }
 
   #chat-121 .chat-history {
-    height: 375px;
+    height: 425px;
     overflow-y: scroll;
   }
 

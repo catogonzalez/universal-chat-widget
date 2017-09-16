@@ -268,49 +268,49 @@ export function Widget (config) {
       {
         id: 1,
         time: now - 600000000,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '1'
       },
       {
         id: 2,
         time: now - 60000000,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       },
       {
         id: 3,
         time: now - 6000000,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '1'
       },
       {
         id: 4,
         time: now - 600000,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       },
       {
         id: 5,
         time: now - 600000,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       },
       {
         id: 6,
         time: now - 600000,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '1'
       },
       {
         id: 7,
         time: now,
-        from: 'Tom Anderson',
+        from: {username: 'Tom Anderson', avatar: null},
         text: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
         direction: '2'
       }]
