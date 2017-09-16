@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <div class="chat-message">
     <time class="message-time">
       <timeago :since="message.time" :max-time="3600 * 24" :auto-update="60" :format="formatTime"></timeago>
     </time>
     <div class="chat-entry" :class="{remote: message.direction == 2}">
-      <avatar v-if="showAvatar" username="message.from.username" :src="message.from.avatar" :size=32></avatar>
+      <avatar v-if="showAvatar && message.from.avatar !== null" :username="message.from.username"
+              :src="message.from.avatar" :size=32></avatar>
+      <avatar v-if="showAvatar && message.from.avatar === null" :username="message.from.username" :size=32></avatar>
       <p v-if="message.text !== null && message.text.trim() !==''" class="message-body message-text">
         {{message.text}}
       </p>
@@ -71,6 +73,12 @@
 </script>`
 
 <style scoped>
+  .chat-message {
+    font-size: 12px;
+    flex-direction: column;
+    font-family: Raleway, Arial, Helvetica, sans-serif;
+  }
+
   .chat-entry {
     display: flex;
     flex-direction: row;
@@ -117,7 +125,14 @@
     border-left-color: #08f;
   }
 
-  .message-body {
+  .chat-entry.remote .message-body {
+    border-top: 1px solid #07f;
+    border-bottom: 1px solid #07f;
+    background-color: #08f;
+    color: #fff;
+  }
+
+  p.message-body {
     background-color: #ddd;
     padding: .5em;
     border-radius: 4px;
@@ -127,14 +142,7 @@
     max-width: 90%;
   }
 
-  .chat-entry.remote .message-body {
-    border-top: 1px solid #07f;
-    border-bottom: 1px solid #07f;
-    background-color: #08f;
-    color: #fff;
-  }
-
-  .message-text {
+  p.message-text {
     margin-top: 2px !important;
     margin-bottom: 2px !important;
   }

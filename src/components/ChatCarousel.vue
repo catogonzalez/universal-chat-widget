@@ -84,6 +84,8 @@
 <style scoped>
 
   .card {
+    font-size: 12px;
+    font-family: Raleway, Arial, Helvetica, sans-serif;
     background: #FFFFFF;
     width: 320px;
     border-radius: 12px;
@@ -100,7 +102,7 @@
     overflow: hidden;
     -webkit-transition: 0.5s ease;
     transition: 0.5s ease;
-    height: 260px;
+    height: 280px;
   }
 
   .product {

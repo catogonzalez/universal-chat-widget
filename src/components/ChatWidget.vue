@@ -34,7 +34,7 @@
     </transition>
     <template v-if="!isEmbedded">
       <transition name="fade">
-        <div id="chat-121-avatar" v-show="!isOpen">
+        <div id="chat-121-avatar" v-show="!isVisible">
           <span class="chat-message-counter" v-if="unreadCount > 0">{{unreadCount}}</span>
           <img :src=avatarUrl @click="toggleVisibility"/>
         </div>
@@ -129,7 +129,7 @@
     methods: {
       toggleVisibility () {
         if (!(this.position.toLowerCase() === 'embedded')) {
-          this.$emit('toggleVisibility')
+          this.$emit('toggleVisibility', this.isOpen)
         }
       },
       trigger () {
@@ -143,7 +143,11 @@
               id: uidv4().replace(/-/g, ''),
               time: new Date().toISOString(),
               text: textArea.value.trim(),
-              direction: '1'
+              direction: '1',
+              from: {
+                username: 'User',
+                avatar: null
+              }
             }
             this.$emit('newUserMessage', newMessage)
           }
@@ -172,7 +176,11 @@
           time: new Date().toISOString(),
           text: data.text,
           userAction: data.userAction,
-          direction: '1'
+          direction: '1',
+          from: {
+            username: 'User',
+            avatar: null
+          }
         }
         this.$emit('newUserMessage', newMessage)
       }
@@ -184,7 +192,7 @@
 <style scoped>
   /* ---------- GENERAL ---------- */
 
-  h4, h5 {
+  h4 {
     line-height: 1.5em;
     margin: 0;
   }

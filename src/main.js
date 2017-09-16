@@ -38,6 +38,7 @@ export function Widget (config) {
   // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
 
   var _widget
+  var _parent
   var _widgetData = {
     position: config.position,
     element: config.element,
@@ -149,10 +150,12 @@ export function Widget (config) {
   function render (params) {
     if (typeof params !== 'object') {
       console.warn(`App ${_adapterConfig.initData.data.appId} failed to initialize: ${params}`)
+      _eventBus.emit('ucw:error', `App ${_adapterConfig.initData.data.appId} failed to initialize: ${params}`)
       return false
     }
     if (params.isEnabled === false) {
       console.warn(`App ${_adapterConfig.initData.data.appId} is disabled in the backend. Widget will not show`)
+      _eventBus.emit('ucw:error', `App ${_adapterConfig.initData.data.appId} is disabled in the backend. Widget will not show`)
       return false
     }
 
@@ -177,7 +180,7 @@ export function Widget (config) {
 
     Vue.config.productionTip = false
     /* eslint-disable no-new */
-    var _parent = new Vue({
+    _parent = new Vue({
       el: params.element,
       template: _template,
       components: {ChatWidget},
@@ -207,14 +210,20 @@ export function Widget (config) {
         }
       },
       methods: {
-        onToggleVisibility () {
-          this.isOpen = !this.isOpen
+        open () {
+          this.isOpen = true
+        },
+        close () {
+          this.isOpen = false
+        },
+        onToggleVisibility (isClosed) {
+          this.isOpen = !isClosed
         },
         onNewUserMessage (newMessage) {
           var data = {
             type: 'messages',
             appId: _appId,
-            from: _deviceId
+            from: {id: _deviceId}
           }
           var merged = deepmerge(newMessage, data)
           // save it to local collection
@@ -253,6 +262,8 @@ export function Widget (config) {
       // re-emit the event in case there are any subscribers attached to our widget
       _eventBus.emit('ucw:newRemoteMessage', data)
     })
+    // signal loaded event
+    _eventBus.emit('ucw:loaded')
   }
 
 //
@@ -320,11 +331,11 @@ export function Widget (config) {
 // widget API (exposed/public) methods
 //
   this.open = function () {
-    _widget.isOpen = true
+    _parent.open()
   }
 
   this.close = function () {
-    _widget.isOpen = false
+    _parent.close()
   }
 
   this.on = function (event, callback) {

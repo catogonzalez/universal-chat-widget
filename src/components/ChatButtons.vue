@@ -1,6 +1,6 @@
 <template>
-  <div class="btns">
-    <div v-for="button in buttonsArray" key="$index" class="btn">
+  <div class="chat-btns">
+    <div v-for="button in buttonsArray" key="$index" class="chat-btn">
       <a v-if="button.type !== 'postback'" :href="button.action" target="_blank">
         {{button.text}}
       </a>
@@ -55,16 +55,15 @@
 </script>`
 
 <style scoped>
-  .btns {
+  .chat-btns {
     margin-top: 15px;
     margin-bottom: 15px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 5px
   }
 
-  .btn a {
+  .chat-btns .chat-btn a {
     -webkit-border-radius: 12px;
     -moz-border-radius: 12px;
     border-radius: 12px;
@@ -76,10 +75,11 @@
     cursor: pointer;
     flex: 1 1 auto;
     margin: 5px;
-    line-height: 33px;
+    display: block;
+    word-wrap: break-word;
   }
 
-  .btn a:hover {
+  .chat-btns .chat-btn a:hover {
     background: #3cb0fd;
     text-decoration: none;
   }
