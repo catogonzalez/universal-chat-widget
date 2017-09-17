@@ -57,15 +57,6 @@
       ChatMessage,
       TypingIndicator
     },
-    updated: function () {
-      if (this.$refs.chatHistory !== undefined) {
-        // scroll to last message
-        this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
-      }
-      if (this.$refs.textArea !== undefined) {
-        this.$refs.textArea.focus()
-      }
-    },
     props: {
       position: {
         type: String,
@@ -125,6 +116,15 @@
       unavailableMessage: {
         type: String,
         default: 'We are sorry: chat is unavailable at the moment.'
+      }
+    },
+    updated: function () {
+      if (this.$refs.chatHistory !== undefined) {
+        // scroll to last message
+        this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
+      }
+      if (this.$refs.textArea !== undefined) {
+        this.$refs.textArea.focus()
       }
     },
     computed: {

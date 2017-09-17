@@ -242,7 +242,7 @@ export function Widget (config) {
           // save it to local collection
           this.messages.push(merged)
           // and notify backend
-          _adapter.subscriber.send(merged)
+          _adapter.send(merged)
         },
         onRequestOlderMessages () {
           if (this.messages[0].time !== undefined && this.messages[0].time !== null && this.messages[0].time.trim() !== '') {
