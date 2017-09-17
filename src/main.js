@@ -75,6 +75,10 @@ export function Widget (config) {
     initAdapter()
   }
 
+  function isFalsey (value) {
+    return (value === 'false' || value === false || value === 0 || value === '0')
+  }
+
   function initAdapter () {
     // Let's init the communication with the backend
 
@@ -101,11 +105,14 @@ export function Widget (config) {
             newUsersIntro: json.new_users_intro || '',
             user: json.user || {id: _deviceId},
             lastMessages: json.last_messages || [],
-            messageCount: json.message_count || 0
+            messageCount: json.message_count || 0,
+            availableFrom: json.available_from || null,
+            availableTo: json.available_to || null,
+            unavailableMessage: json.unavailable_message || null
           }
           if (json.show_avatars !== undefined) {
             // showAvatars: whatever comes from the backend superseeds the initial config of the widget
-            if (json.show_avatars === 'false' || json.show_avatars === false) {
+            if (isFalsey(json.show_avatars)) {
               widgetConfig.showAvatars = false
               _widgetData.showAvatars = false
             } else {
@@ -115,7 +122,7 @@ export function Widget (config) {
           }
           if (json.allow_uploads !== undefined) {
             // allowUploads: whatever comes from the backend superseeds the initial config of the widget
-            if (json.allow_uploads === 'false' || json.allow_uploads === false) {
+            if (isFalsey(json.allow_uploads)) {
               widgetConfig.allowUploads = false
               _widgetData.allowUploads = false
             } else {
@@ -125,7 +132,7 @@ export function Widget (config) {
           }
           if (json.is_enabled !== undefined) {
             // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
-            if (json.is_enabled === 'false' || json.is_enabled === false) {
+            if (isFalsey(json.is_enabled)) {
               widgetConfig.isEnabled = false
               _widgetData.isEnabled = false
             } else {
@@ -169,6 +176,9 @@ export function Widget (config) {
       :displayName="displayName"
       :showAvatars="showAvatars"
       :allowUploads="allowUploads"
+      :availableFrom="availableFrom"
+      :availableTo="availableTo"
+      :unavailableMessage="unavailableMessage"
       :avatarUrl="avatarUrl"
       :newUsersIntro="newUsersIntro"
       :messages="messages"
@@ -190,6 +200,9 @@ export function Widget (config) {
         displayName: params.displayName,
         showAvatars: params.showAvatars,
         allowUploads: params.allowUploads,
+        availableFrom: params.availableFrom || null,
+        availableTo: params.availableTo || null,
+        unavailableMessage: params.unavailableMessage || null,
         avatarUrl: params.avatarUrl,
         newUsersIntro: params.newUsersIntro,
         messages: params.lastMessages,

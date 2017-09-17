@@ -6,7 +6,7 @@
           <a v-if="!isEmbedded" href="#" class="chat-close">X</a>
           <h4>{{displayName}}</h4>
         </header>
-        <div class="chat">
+        <div v-if="isAvailable" class="chat">
           <div class="chat-history" ref="chatHistory" @scroll="onScroll">
             <chat-message v-for="message in messages" :key="message.id"
                           :message="message"
@@ -26,8 +26,11 @@
             </button>
           </div>
         </div>
+        <div v-if="!isAvailable" class="chat-unavailable">
+          <p>{{ unavailableMessage }}</p>
+        </div>
         <div class="powered-by">
-          <a href="https://121.services/chat?utm_source=chat_window&utm_medium=referral&partner=www.yoursite.com&utm_campaign=121.services&utm_term=none"
+          <a href="https://121.services/en/chatbots?utm_source=chat_widget&utm_medium=referral"
              target="_blank">Powered by 121 Services</a>
         </div>
       </div>
@@ -110,6 +113,18 @@
       unreadCount: {
         type: Number,
         default: 0
+      },
+      availableFrom: {
+        type: String,
+        default: null
+      },
+      availableTo: {
+        type: String,
+        default: null
+      },
+      unavailableMessage: {
+        type: String,
+        default: 'We are sorry: chat is unavailable at the moment.'
       }
     },
     computed: {
@@ -124,6 +139,13 @@
       },
       isVisible () {
         return (this.isOpen || this.position.toLowerCase() === 'embedded')
+      },
+      isAvailable () {
+        if (this.availableFrom === null || this.availableTo === null) {
+          return true
+        } else {
+          return (Date.now() >= Date.parse(this.availableFrom) && Date.now() <= Date.parse(this.availableTo))
+        }
       }
     },
     methods: {
@@ -234,7 +256,7 @@
     width: 350px;
     height: 550px;
     font-size: 12px;
-    z-index: 0;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     font-family: Raleway, Arial, Helvetica, sans-serif;
@@ -314,6 +336,12 @@
   #chat-121 .inputs {
     padding: 8px;
     position: relative;
+  }
+
+  #chat-121 .chat-unavailable {
+    font-size: 2em;
+    text-align: center;
+    padding: 50px 10px 10px 10px;
   }
 
   #chat-121 .inputs textarea {
