@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import ChatWidget from './components/ChatWidget.vue'
 import ChatAdapterActionCable from 'chat-adapter-actioncable'
+// import ChatAdapterRocketChat from 'chat-adapter-rocketchat'
 import Fingerprint2 from 'fingerprintjs2'
 import deepmerge from 'deepmerge'
 import EventEmitter from 'events'
@@ -10,6 +11,7 @@ import EventEmitter from 'events'
 // Package name UniversalChatWidget defined in webpack.base.conf.js to be able to use window.UniversalChatWidget
 export function Widget (config) {
   // config must be a json object with this configuration
+  // *adapter: one of ActionCable or RocketChat
   // *element: css selector of element to replace in DOM
   // position: embedded|*bottom-right
   // showAvatars: *true|false
@@ -48,7 +50,22 @@ export function Widget (config) {
   var _eventBus = new EventEmitter()
 
   // TODO: *adapter.instance: Instance of ChatAdapter{ActionCable}
-  var _adapter = new ChatAdapterActionCable()
+  var _adapter
+
+  switch (config.adapter.toLowerCase()) {
+    case 'actioncable':
+      _adapter = new ChatAdapterActionCable()
+      break
+
+    // case 'rocketchat':
+    //  _adapter = new ChatAdapterRocketChat()
+    //  break
+
+    default:
+      render(`Invalid adapter: ${config.adapter}. Please use either ActionCable or RocketChat`)
+      break
+  }
+
   var _adapterConfig = config.adapterConfig
   var _appId = _adapterConfig.initData.data.appId
 
