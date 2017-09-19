@@ -72,7 +72,7 @@ export function Widget (config) {
   // retrieve device fingerprint from (browser) local storage
   var _deviceId = localStorage.getItem('ucwDeviceId')
 
-  if (_deviceId === null) {
+  if (_deviceId === null || _deviceId === undefined) {
     // check if config data provides a user.id
     if (_adapterConfig && _adapterConfig.initData && _adapterConfig.initData.data && _adapterConfig.initData.data.user && _adapterConfig.initData.data.user.id) {
       // TODO: implement user-merge in backend, when user.id id provided and localStorage.devideId id already set, user.id should survive the merge
