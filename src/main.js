@@ -7,6 +7,7 @@ import ChatAdapterActionCable from 'chat-adapter-actioncable'
 import Fingerprint2 from 'fingerprintjs2'
 import deepmerge from 'deepmerge'
 import EventEmitter from 'events'
+import uidv4 from 'uuid/v4'
 
 // Package name UniversalChatWidget defined in webpack.base.conf.js to be able to use window.UniversalChatWidget
 export function Widget (config) {
@@ -228,13 +229,17 @@ export function Widget (config) {
         messageCount: params.messageCount,
         unreadCount: 0
       },
-      updated: function () {
+      mounted: function () {
         if (this.messages.length === 0) {
           var welcome = {
-            time: new Date().getTime(),
-            from: this.displayName,
+            id: uidv4().replace(/-/g, ''),
+            time: new Date().toISOString(),
             text: this.newUsersIntro,
-            direction: '2'
+            direction: '2',
+            from: {
+              username: this.displayName,
+              avatar: this.avatarUrl
+            }
           }
           this.messages.push(welcome)
         }
