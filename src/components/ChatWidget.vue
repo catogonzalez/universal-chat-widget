@@ -118,18 +118,16 @@
         default: 'We are sorry: chat is unavailable at the moment.'
       }
     },
+    mounted: function () {
+      this.scrollToBottom()
+    },
     updated: function () {
-      if (this.$refs.chatHistory !== undefined) {
-        // scroll to last message
-        this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
-      }
-      if (this.$refs.textArea !== undefined) {
-        this.$refs.textArea.focus()
-      }
+      this.scrollToBottom()
     },
     computed: {
       classObject () {
         return {
+          'ucw': true,
           'bottom-right': (this.position.toLowerCase() === 'bottom-right'),
           'embedded': (this.position.toLowerCase() === 'embedded')
         }
@@ -180,6 +178,15 @@
 
           // scroll to last message
           this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
+        }
+      },
+      scrollToBottom () {
+        if (this.$refs.chatHistory !== undefined) {
+          // scroll to last message
+          this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
+        }
+        if (this.$refs.textArea !== undefined) {
+          this.$refs.textArea.focus()
         }
       },
       onScroll (e) {
@@ -241,6 +248,10 @@
   }
 
   /* ---------- 121-CHAT ---------- */
+
+  .ucw {
+    z-index: 1000;
+  }
 
   .bottom-right {
     position: fixed;

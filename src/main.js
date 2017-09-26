@@ -78,14 +78,14 @@ export function Widget (config) {
     if (_adapterConfig && _adapterConfig.initData && _adapterConfig.initData.data && _adapterConfig.initData.data.user && _adapterConfig.initData.data.user.id) {
       // TODO: implement user-merge in backend, when user.id id provided and localStorage.devideId id already set, user.id should survive the merge
       _deviceId = _adapterConfig.initData.data.user.id
-      localStorage.setItem('ucwDeviceId', self._deviceId)
+      localStorage.setItem('ucwDeviceId', _deviceId)
       initAdapter()
     } else {
       // register new device:
       // build deviceId from Fingerprint2
       new Fingerprint2().get(function (result) {
         _deviceId = result
-        localStorage.setItem('ucwDeviceId', result)
+        localStorage.setItem('ucwDeviceId', _deviceId)
         initAdapter()
       })
     }
@@ -115,57 +115,61 @@ export function Widget (config) {
 
     _adapter.init(_adapterConfig)
         .then(json => {
-          // console.log(json)
-          var widgetConfig = {
-            name: json.name || 'chat',
-            displayName: json.display_name || 'Chat',
-            avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
-            newUsersIntro: json.new_users_intro || '',
-            user: json.user || {id: _deviceId},
-            lastMessages: json.last_messages || [],
-            messageCount: json.message_count || 0,
-            availableFrom: json.available_from || null,
-            availableTo: json.available_to || null,
-            unavailableMessage: json.unavailable_message || null
-          }
-          if (json.show_avatars !== undefined) {
-            // showAvatars: whatever comes from the backend superseeds the initial config of the widget
-            if (isFalsey(json.show_avatars)) {
-              widgetConfig.showAvatars = false
-              _widgetData.showAvatars = false
-            } else {
-              widgetConfig.showAvatars = true
-              _widgetData.showAvatars = true
+          if (typeof json !== 'object') {
+            // an error ocurred
+            render(json)
+          } else {
+            var widgetConfig = {
+              name: json.name || 'chat',
+              displayName: json.display_name || 'Chat',
+              avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
+              newUsersIntro: json.new_users_intro || '',
+              user: json.user || {id: _deviceId},
+              lastMessages: json.last_messages || [],
+              messageCount: json.message_count || 0,
+              availableFrom: json.available_from || null,
+              availableTo: json.available_to || null,
+              unavailableMessage: json.unavailable_message || null
             }
-          }
-          if (json.allow_uploads !== undefined) {
-            // allowUploads: whatever comes from the backend superseeds the initial config of the widget
-            if (isFalsey(json.allow_uploads)) {
-              widgetConfig.allowUploads = false
-              _widgetData.allowUploads = false
-            } else {
-              widgetConfig.allowUploads = true
-              _widgetData.allowUploads = true
+            if (json.show_avatars !== undefined) {
+              // showAvatars: whatever comes from the backend superseeds the initial config of the widget
+              if (isFalsey(json.show_avatars)) {
+                widgetConfig.showAvatars = false
+                _widgetData.showAvatars = false
+              } else {
+                widgetConfig.showAvatars = true
+                _widgetData.showAvatars = true
+              }
             }
-          }
-          if (json.is_enabled !== undefined) {
-            // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
-            if (isFalsey(json.is_enabled)) {
-              widgetConfig.isEnabled = false
-              _widgetData.isEnabled = false
-            } else {
-              widgetConfig.isEnabled = true
-              _widgetData.isEnabled = true
+            if (json.allow_uploads !== undefined) {
+              // allowUploads: whatever comes from the backend superseeds the initial config of the widget
+              if (isFalsey(json.allow_uploads)) {
+                widgetConfig.allowUploads = false
+                _widgetData.allowUploads = false
+              } else {
+                widgetConfig.allowUploads = true
+                _widgetData.allowUploads = true
+              }
             }
-          }
-          if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
-            // use fake messages in development when there are no messages
-            // widgetConfig.lastMessages = devMessages()
-            devMessages()
-          }
+            if (json.is_enabled !== undefined) {
+              // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
+              if (isFalsey(json.is_enabled)) {
+                widgetConfig.isEnabled = false
+                _widgetData.isEnabled = false
+              } else {
+                widgetConfig.isEnabled = true
+                _widgetData.isEnabled = true
+              }
+            }
+            if (process.env.NODE_ENV === 'development' && widgetConfig.lastMessages.length === 0) {
+              // use fake messages in development when there are no messages
+              // widgetConfig.lastMessages = devMessages()
+              devMessages()
+            }
 
-          widgetConfig = deepmerge(widgetConfig, _widgetData)
-          render(widgetConfig)
+            widgetConfig = deepmerge(widgetConfig, _widgetData)
+            render(widgetConfig)
+          }
         })
         .catch(error => {
           render(error)
