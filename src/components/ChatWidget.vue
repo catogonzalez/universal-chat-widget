@@ -249,6 +249,70 @@
 
   /* ---------- 121-CHAT ---------- */
 
+  @media (min-height: 480px) {
+    #chat-121 {
+      height: 450px;
+    }
+    #chat-121 .chat-history {
+      height: 325px;
+    }
+  }
+
+  @media (min-height: 600px) {
+    #chat-121 {
+      height: 550px;
+    }
+    #chat-121 .chat-history {
+      height: 425px;
+    }
+  }
+
+  @media (min-height: 900px) {
+    #chat-121 {
+      height: 650px;
+    }
+    #chat-121 .chat-history {
+      height: 525px;
+    }
+  }
+
+  @media (min-width: 320px) and (orientation: landscape) {
+    #chat-121 {
+      height: 320px;
+    }
+    #chat-121 .chat-history {
+      height: 195px;
+    }
+  }
+
+  @media (min-width: 768px) and (orientation: landscape) {
+    #chat-121 {
+      height: 650px;
+    }
+    #chat-121 .chat-history {
+      height: 525px;
+    }
+  }
+
+
+  @media (min-width: 320px) {
+    #chat-121 {
+      width: 300px;
+    }
+  }
+
+  @media (min-width: 360px) {
+    #chat-121 {
+      width: 340px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #chat-121 {
+      width: 370px;
+    }
+  }
+
   .ucw {
     z-index: 1000;
   }
@@ -264,8 +328,6 @@
   }
 
   #chat-121 {
-    width: 350px;
-    height: 550px;
     font-size: 12px;
     z-index: 10;
     display: flex;
@@ -335,7 +397,6 @@
   }
 
   #chat-121 .chat-history {
-    height: 425px;
     overflow-y: scroll;
   }
 
@@ -410,7 +471,6 @@
   }
 
   /* TRANSITIONS */
-
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s
   }

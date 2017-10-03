@@ -83,11 +83,28 @@
 
 <style scoped>
 
+  @media (min-width: 320px) {
+    .card {
+      width: 280px;
+    }
+  }
+
+  @media (min-width: 360px) {
+    .card {
+      width: 320px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .card {
+      width: 330px;
+    }
+  }
+
   .card {
     font-size: 12px;
     font-family: Raleway, Arial, Helvetica, sans-serif;
     background: #FFFFFF;
-    width: 320px;
     border-radius: 12px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     box-sizing: border-box;
@@ -144,6 +161,7 @@
   .description {
     margin: 0 0 15px;
     text-align: start;
+    max-height: 45px;
   }
 
   .products .buttons {
