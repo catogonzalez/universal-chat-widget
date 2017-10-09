@@ -41,7 +41,7 @@ export function Widget (config) {
   // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
 
   // sample rocket chat initilization:
-  // a = new UniversalChatWidget.Widget({adapter: 'RocketChat', element:'#chat-widget', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'https://chat-stg.121services.co/api/v1', initData: {adminUsername: 'admin', adminPassword: 'admin', data: {appId: 'AB'}}}})
+  // a = new UniversalChatWidget.Widget({adapter: 'RocketChat', element:'#chat-widget', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:4000', mode: 'private', initData: {adminUsername: 'admin', adminPassword: 'admin', data: {appId: 'GENERAL'}}}})
 
   var _widget
   var _parent
@@ -204,6 +204,7 @@ export function Widget (config) {
       @newUserMessage="onNewUserMessage"
       @requestOlderMessages="onRequestOlderMessages"
       :position="position"
+      :user="user"
       :name="name"
       :displayName="displayName"
       :showAvatars="showAvatars"
@@ -228,6 +229,7 @@ export function Widget (config) {
       components: {ChatWidget},
       data: {
         position: params.position || 'bottom-right',
+        user: params.user,
         name: params.name,
         displayName: params.displayName,
         showAvatars: params.showAvatars,

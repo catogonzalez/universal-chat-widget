@@ -62,6 +62,10 @@
         type: String,
         default: 'bottom-right'
       },
+      user: {
+        type: Object,
+        default: {}
+      },
       showAvatars: {
         type: Boolean,
         default: true
@@ -165,8 +169,8 @@
               text: textArea.value.trim(),
               direction: '1',
               from: {
-                username: 'User',
-                avatar: null
+                username: this.user.username === undefined ? 'User' : this.user.username,
+                avatar: this.user.avatar === undefined ? null : this.user.avatar
               }
             }
             this.$emit('newUserMessage', newMessage)
