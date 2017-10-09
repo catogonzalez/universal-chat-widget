@@ -4,9 +4,9 @@
       <timeago :since="message.time" :max-time="3600 * 24" :auto-update="60" :format="formatTime"></timeago>
     </time>
     <div class="chat-entry" :class="{remote: message.direction == 2}">
-      <avatar v-if="showAvatar && message.from.avatar !== null" :username="message.from.username"
+      <avatar v-if="showAvatar && message.from.avatar !== null && message.from.avatar.trim() !== ''" :username="message.from.username"
               :src="message.from.avatar" :size=32></avatar>
-      <avatar v-if="showAvatar && message.from.avatar === null" :username="message.from.username" :size=32></avatar>
+      <avatar v-if="showAvatar && (message.from.avatar === null || message.from.avatar.trim() === '')" :username="message.from.username" :size=32></avatar>
       <p v-if="message.text !== null && message.text.trim() !==''" class="message-body message-text">
         {{message.text}}
       </p>

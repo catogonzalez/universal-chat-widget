@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import ChatWidget from './components/ChatWidget.vue'
 import ChatAdapterActionCable from 'chat-adapter-actioncable'
-// import ChatAdapterRocketChat from 'chat-adapter-rocketchat'
+import ChatAdapterRocketChat from 'chat-adapter-rocketchat'
 import Fingerprint2 from 'fingerprintjs2'
 import deepmerge from 'deepmerge'
 import EventEmitter from 'events'
@@ -37,8 +37,11 @@ export function Widget (config) {
   //                              profilePicUrl: http://lorempixel.com/32/32/people
   //                      }
   //
-  // sample initilization:
+  // sample action cable initilization:
   // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
+
+  // sample rocket chat initilization:
+  // a = new UniversalChatWidget.Widget({adapter: 'RocketChat', element:'#chat-widget', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'https://chat-stg.121services.co/api/v1', initData: {adminUsername: 'admin', adminPassword: 'admin', data: {appId: 'AB'}}}})
 
   var _widget
   var _parent
@@ -58,9 +61,9 @@ export function Widget (config) {
       _adapter = new ChatAdapterActionCable()
       break
 
-    // case 'rocketchat':
-    //  _adapter = new ChatAdapterRocketChat()
-    //  break
+    case 'rocketchat':
+      _adapter = new ChatAdapterRocketChat()
+      break
 
     default:
       render(`Invalid adapter: ${config.adapter}. Please use either ActionCable or RocketChat`)
@@ -115,6 +118,8 @@ export function Widget (config) {
 
     _adapter.init(_adapterConfig)
         .then(json => {
+          console.debug('Adapter init returned:', json)
+
           if (typeof json !== 'object') {
             // an error ocurred
             render(json)
@@ -170,10 +175,15 @@ export function Widget (config) {
             widgetConfig = deepmerge(widgetConfig, _widgetData)
             render(widgetConfig)
           }
-        })
-        .catch(error => {
+        },
+        error => {
+          console.error('Adapter init returned error:', error)
           render(error)
         })
+    .catch(error => {
+      console.error('Adapter init raised error:', error)
+      render(error)
+    })
   }
 
   function render (params) {
@@ -235,17 +245,19 @@ export function Widget (config) {
       },
       mounted: function () {
         if (this.messages.length === 0) {
-          var welcome = {
-            id: uidv4().replace(/-/g, ''),
-            time: new Date().toISOString(),
-            text: this.newUsersIntro,
-            direction: '2',
-            from: {
-              username: this.displayName,
-              avatar: this.avatarUrl
+          if (this.newUsersIntro.trim() !== '') {
+            var welcome = {
+              id: uidv4().replace(/-/g, ''),
+              time: new Date().toISOString(),
+              text: this.newUsersIntro,
+              direction: '2',
+              from: {
+                username: this.displayName,
+                avatar: this.avatarUrl
+              }
             }
+            this.messages.push(welcome)
           }
-          this.messages.push(welcome)
         }
       },
       methods: {
@@ -257,6 +269,10 @@ export function Widget (config) {
         },
         onToggleVisibility (isClosed) {
           this.isOpen = !isClosed
+          if (this.isOpen) {
+            // reset unread count
+            _parent.unreadCount = 0
+          }
         },
         onNewUserMessage (newMessage) {
           var data = {
@@ -271,7 +287,7 @@ export function Widget (config) {
           _adapter.send(merged)
         },
         onRequestOlderMessages () {
-          if (this.messages[0].time !== undefined && this.messages[0].time !== null && this.messages[0].time.trim() !== '') {
+          if (this.messages[0].time !== undefined && this.messages[0].time !== null) {
             var data = {
               appId: _appId,
               deviceId: _deviceId,
@@ -281,7 +297,9 @@ export function Widget (config) {
             _adapter.requestOlderMessages(data)
                 .then(response => {
                   if (response.status === 200) {
-                    this.messages = response.data.concat(this.messages)
+                    if (response.data.length > 0) {
+                      this.messages = response.data.concat(this.messages)
+                    }
                   } else {
                     console.error(response)
                   }
@@ -297,7 +315,9 @@ export function Widget (config) {
     _widget = _parent.$refs.widget
     _adapter.on('ucw:newRemoteMessage', (data) => {
       _widget.messages.push(data)
-
+      if (!_widget.isOpen) {
+        _parent.unreadCount += 1
+      }
       // re-emit the event in case there are any subscribers attached to our widget
       _eventBus.emit('ucw:newRemoteMessage', data)
     })

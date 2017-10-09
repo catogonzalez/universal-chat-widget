@@ -253,6 +253,7 @@
     #chat-121 {
       height: 450px;
     }
+
     #chat-121 .chat-history {
       height: 325px;
     }
@@ -262,6 +263,7 @@
     #chat-121 {
       height: 550px;
     }
+
     #chat-121 .chat-history {
       height: 425px;
     }
@@ -271,6 +273,7 @@
     #chat-121 {
       height: 650px;
     }
+
     #chat-121 .chat-history {
       height: 525px;
     }
@@ -280,6 +283,7 @@
     #chat-121 {
       height: 320px;
     }
+
     #chat-121 .chat-history {
       height: 195px;
     }
@@ -289,11 +293,11 @@
     #chat-121 {
       height: 650px;
     }
+
     #chat-121 .chat-history {
       height: 525px;
     }
   }
-
 
   @media (min-width: 320px) {
     #chat-121 {
