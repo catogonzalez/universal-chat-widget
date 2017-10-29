@@ -74,9 +74,10 @@
 
 <style scoped>
   .chat-message {
-    font-size: 12px;
+    font-size: 0.8em;
     flex-direction: column;
     font-family: Raleway, Arial, Helvetica, sans-serif;
+    padding-top: 1em;
   }
 
   .chat-entry {
@@ -84,7 +85,7 @@
     flex-direction: row;
     align-items: flex-end;
     max-width: 100%;
-    margin: .5em;
+    margin: .2em;
   }
 
   .chat-entry.remote {
@@ -95,21 +96,21 @@
     flex-shrink: 0;
     flex-grow: 0;
     z-index: 1;
-    height: 32px;
-    width: 32px;
+    height: 3em;
+    width: 3em;
     border-radius: 50%;
   }
 
   .chat-entry .message-body {
     position: relative;
-    margin: 0 12px;
+    margin: 0 1em;
   }
 
   .chat-entry .message-body::before {
     position: absolute;
     right: auto;
-    bottom: .6em;
-    left: -12px;
+    bottom: 0.6em;
+    left: -0.9em;
     height: 0;
     content: '';
     border: 6px solid transparent;
@@ -118,8 +119,8 @@
   }
 
   .chat-entry.remote .message-body::before {
-    right: -12px;
-    bottom: .6em;
+    right: -0.9em;
+    bottom: 0.6em;
     left: auto;
     border: 6px solid transparent;
     border-left-color: #08f;
@@ -148,7 +149,7 @@
   }
 
   .message-time {
-    font-size: x-small;
+    font-size: 0.8em;
     margin-left: 1em;
   }
 

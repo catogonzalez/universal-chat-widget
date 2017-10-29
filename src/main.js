@@ -1,6 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+
 import ChatWidget from './components/ChatWidget.vue'
 import ChatAdapterActionCable from 'chat-adapter-actioncable'
 import ChatAdapterRocketChat from 'chat-adapter-rocketchat'
@@ -38,10 +39,10 @@ export function Widget (config) {
   //                      }
   //
   // sample action cable initilization:
-  // a = new UniversalChatWidget.Widget({element:'#chat-2', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
+  // a = new UniversalChatWidget.Widget({adapter: 'ActionCable', element:'#chat-widget', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:3003/web', initData: {endpoint: '/start', method: 'post', data: {appId: '63015c58-13cf-438d-b5d9-d46adcba3139'}}}})
 
   // sample rocket chat initilization:
-  // a = new UniversalChatWidget.Widget({adapter: 'RocketChat', element:'#chat-widget', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:4000', mode: 'private', initData: {adminUsername: 'admin', adminPassword: 'admin', data: {appId: 'GENERAL'}}}})
+  // a = new UniversalChatWidget.Widget({adapter: 'RocketChat', element:'#chat-widget', position:'bottom-right', showAvatars: true, allowUploads: true, adapterConfig: {backendUrl: 'http://localhost:4000', mode: 'private', initData: {username: 'admin', password: 'admin', data: {roomId: 'GENERAL'}}}})
 
   var _widget
   var _parent
@@ -53,7 +54,6 @@ export function Widget (config) {
   }
   var _eventBus = new EventEmitter()
 
-  // TODO: *adapter.instance: Instance of ChatAdapter{ActionCable}
   var _adapter
 
   switch (config.adapter.toLowerCase()) {
@@ -71,7 +71,6 @@ export function Widget (config) {
   }
 
   var _adapterConfig = config.adapterConfig
-  var _appId = _adapterConfig.initData.data.appId
 
   // retrieve device fingerprint from (browser) local storage
   var _deviceId = localStorage.getItem('ucwDeviceId')
@@ -114,7 +113,7 @@ export function Widget (config) {
       _adapterConfig.initData.data = {}
     }
     _adapterConfig.initData.data = deepmerge(_adapterConfig.initData.data, enhancedConfig)
-    // console.log('_adapterConfig.initData ', _adapterConfig.initData)
+    // console.debug('_adapterConfig ', _adapterConfig)
 
     _adapter.init(_adapterConfig)
         .then(json => {
@@ -188,7 +187,7 @@ export function Widget (config) {
 
   function render (params) {
     if (typeof params !== 'object') {
-      console.warn(`App ${_adapterConfig.initData.data.appId} failed to initialize: ${params}`)
+      console.warn(`Chat failed to initialize: ${params}`)
       _eventBus.emit('ucw:error', `App ${_adapterConfig.initData.data.appId} failed to initialize: ${params}`)
       return false
     }
@@ -269,6 +268,9 @@ export function Widget (config) {
         close () {
           this.isOpen = false
         },
+        sendMessage () {
+          this.isOpen = false
+        },
         onToggleVisibility (isClosed) {
           this.isOpen = !isClosed
           if (this.isOpen) {
@@ -279,7 +281,6 @@ export function Widget (config) {
         onNewUserMessage (newMessage) {
           var data = {
             type: 'messages',
-            appId: _appId,
             from: {id: _deviceId}
           }
           var merged = deepmerge(newMessage, data)
@@ -291,7 +292,6 @@ export function Widget (config) {
         onRequestOlderMessages () {
           if (this.messages[0].time !== undefined && this.messages[0].time !== null) {
             var data = {
-              appId: _appId,
               deviceId: _deviceId,
               id: this.messages[0].id,
               time: this.messages[0].time
@@ -397,6 +397,10 @@ export function Widget (config) {
 
   this.close = function () {
     _parent.close()
+  }
+
+  this.sendMessage = function (message) {
+    _parent.sendMessage(message)
   }
 
   this.on = function (event, callback) {

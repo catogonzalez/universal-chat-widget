@@ -56,8 +56,8 @@
 
 <style scoped>
   .chat-btns {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 0.5em;
+    margin-bottom: 0.8em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

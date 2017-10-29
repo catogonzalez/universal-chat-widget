@@ -30,8 +30,8 @@
           <p>{{ unavailableMessage }}</p>
         </div>
         <div class="powered-by">
-          <a href="https://121.services/en/chatbots?utm_source=chat_widget&utm_medium=referral"
-             target="_blank">Powered by 121 Services</a>
+          <a :href="poweredByHref"
+             target="_blank">{{ poweredByText }}</a>
         </div>
       </div>
     </transition>
@@ -120,6 +120,14 @@
       unavailableMessage: {
         type: String,
         default: 'We are sorry: chat is unavailable at the moment.'
+      },
+      poweredByText: {
+        type: String,
+        default: 'Powered by 121 Services'
+      },
+      poweredByHost: {
+        type: String,
+        default: 'https://121.services'
       }
     },
     mounted: function () {
@@ -148,6 +156,10 @@
         } else {
           return (Date.now() >= Date.parse(this.availableFrom) && Date.now() <= Date.parse(this.availableTo))
         }
+      },
+      poweredByHref () {
+        var loc = window.location
+        return `${this.poweredByHost}?utm_source=chat-widget&utm_medium=${loc.hostname}`
       }
     },
     methods: {
@@ -225,29 +237,34 @@
 <style scoped>
   /* ---------- GENERAL ---------- */
 
-  h4 {
+  .ucw {
+    font-size: 62.5%;
+    z-index: 1000;
+  }
+
+  .ucw h4 {
     line-height: 1.5em;
     margin: 0;
   }
 
-  img {
+  .ucw img {
     border: 0;
     display: block;
     height: auto;
     max-width: 100%;
   }
 
-  .clearfix {
+  .ucw .clearfix {
     *zoom: 1;
   }
 
   /* For IE 6/7 */
-  .clearfix:before, .clearfix:after {
+  .ucw .clearfix:before, .ucw .clearfix:after {
     content: "";
     display: table;
   }
 
-  .clearfix:after {
+  .ucw .clearfix:after {
     clear: both;
   }
 
@@ -321,14 +338,12 @@
     }
   }
 
-  .ucw {
-    z-index: 1000;
-  }
-
   .bottom-right {
     position: fixed;
     bottom: 0;
     right: 0;
+    padding-bottom: 1.5em;
+    padding-right: 1.5em;
   }
 
   .embedded {
@@ -336,7 +351,7 @@
   }
 
   #chat-121 {
-    font-size: 12px;
+    font-size: calc(0.6em + 1vw);;
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -354,11 +369,11 @@
   }
 
   #chat-121 h4 {
-    font-size: 12px;
+    font-size: 1em;
   }
 
   #chat-121 h5 {
-    font-size: 10px;
+    font-size: 1em;
   }
 
   .chat-message-counter {
@@ -386,12 +401,12 @@
     color: #fff;
     display: block;
     float: right;
-    font-size: 12px;
-    height: 16px;
-    line-height: 16px;
+    font-size: 1em;
+    height: 1.3em;
+    line-height: 1.3em;
     margin: 2px 0 0 0;
     text-align: center;
-    width: 16px;
+    width: 1.3em;
     text-decoration: none;
   }
 
@@ -425,6 +440,7 @@
   }
 
   #chat-121 .inputs textarea {
+    font-size: 0.8em;
     border: 1px solid #ccc;
     border-radius: 3px;
     padding: 8px;
@@ -467,10 +483,9 @@
   #chat-121 .powered-by {
     background: #fff;
     margin-top: auto;
-    font-size: .7rem;
+    font-size: 0.7em;
     color: #fff;
-    text-shadow: 0 .1rem .6rem rgba(0, 0, 0, .7);
-    z-index: 0;
+    /*text-shadow: 0 .1em .6em rgba(0, 0, 0, .7);*/
     padding-right: 1em;
   }
 

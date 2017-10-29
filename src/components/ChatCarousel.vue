@@ -102,16 +102,16 @@
   }
 
   .card {
-    font-size: 12px;
+    font-size: 1em;
     font-family: Raleway, Arial, Helvetica, sans-serif;
     background: #FFFFFF;
     border-radius: 12px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     box-sizing: border-box;
-    padding: 12px;
+    padding: 0.8em;
     text-align: center;
-    margin-left: 12px;
-    margin-bottom: 12px;
+    margin-left: 0.8em;
+    margin-bottom: 0.8em;
   }
 
   .products {
@@ -119,7 +119,7 @@
     overflow: hidden;
     -webkit-transition: 0.5s ease;
     transition: 0.5s ease;
-    height: 280px;
+    height: 17em;
   }
 
   .product {
@@ -138,34 +138,38 @@
   }
 
   .card .product h1 {
-    font-size: 1.2em;
+    font-size: 1em;
   }
 
   .thumbnail {
-    margin: 0 0 12px;
+    margin: 0 0 0.5em;
   }
 
   .thumbnail img {
-    height: 100px;
+    height: 8em;
     width: auto;
   }
 
   .title {
-    margin: 0 0 12px;
+    margin: 0 0 0.2em;
     color: #D18B49;
-    font-size: 24px;
+    font-size: 1.2em;
     -webkit-transition: 0.5s ease;
     transition: 0.5s ease;
+    max-height: 2.5em;
+    text-overflow: clip;
+    overflow: hidden;
   }
 
   .description {
-    margin: 0 0 15px;
+    margin: 0 0 0.2em;
     text-align: start;
-    max-height: 45px;
+    max-height: 2.5em;
+    text-overflow: clip;
+    overflow: hidden;
   }
 
   .products .buttons {
-    bottom: 20%;
     pointer-events: all;
   }
 
