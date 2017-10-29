@@ -29,7 +29,7 @@
         <div v-if="!isAvailable" class="chat-unavailable">
           <p>{{ unavailableMessage }}</p>
         </div>
-        <div class="powered-by">
+        <div v-if="poweredByText !==''" class="powered-by">
           <a :href="poweredByHref"
              target="_blank">{{ poweredByText }}</a>
         </div>
@@ -175,26 +175,27 @@
         if (e.keyCode === 13) {
           var textArea = e.target
           if (textArea.value.trim() !== '') {
-            var newMessage = {
-              id: uidv4().replace(/-/g, ''),
-              time: new Date().toISOString(),
-              text: textArea.value.trim(),
-              direction: '1',
-              from: {
-                username: this.user.username === undefined ? 'User' : this.user.username,
-                avatar: this.user.avatar === undefined ? null : this.user.avatar
-              }
-            }
-            this.$emit('newUserMessage', newMessage)
+            this.sendMessage(textArea.value.trim())
           }
           textArea.value = ''
           textArea.setSelectionRange(0, 0)
           textArea.blur()
-//        this.isTyping = false
-
-          // scroll to last message
-          this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
         }
+      },
+      sendMessage (text) {
+        var newMessage = {
+          id: uidv4().replace(/-/g, ''),
+          time: new Date().toISOString(),
+          text: text,
+          direction: '1',
+          from: {
+            username: this.user.username === undefined ? 'User' : this.user.username,
+            avatar: this.user.avatar === undefined ? null : this.user.avatar
+          }
+        }
+        this.$emit('newUserMessage', newMessage)
+        // scroll to last message
+        this.$refs.chatHistory.scrollTop = this.$refs.chatHistory.scrollHeight
       },
       scrollToBottom () {
         if (this.$refs.chatHistory !== undefined) {
@@ -344,6 +345,7 @@
     right: 0;
     padding-bottom: 1.5em;
     padding-right: 1.5em;
+    border-radius: 5px 5px 0 0;
   }
 
   .embedded {
@@ -358,6 +360,7 @@
     font-family: Raleway, Arial, Helvetica, sans-serif;
     background-color: #f5f7fa;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    border-radius: 5px 5px 0 0;
   }
 
   #chat-121 header {

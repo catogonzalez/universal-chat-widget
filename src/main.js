@@ -50,7 +50,9 @@ export function Widget (config) {
     position: config.position,
     element: config.element,
     showAvatars: config.showAvatars,
-    allowUploads: config.allowUploads
+    allowUploads: config.allowUploads,
+    poweredByText: config.poweredByText,
+    poweredByHost: config.poweredByHost
   }
   var _eventBus = new EventEmitter()
 
@@ -217,7 +219,9 @@ export function Widget (config) {
       :isOpen="isOpen"
       :isTyping="isTyping"
       :messageCount="messageCount"
-      :unreadCount="unreadCount"/>
+      :unreadCount="unreadCount"
+      :poweredByText="poweredByText"
+      :poweredByHost="poweredByHost"/>
       </chat-widget>`
 
     Vue.config.productionTip = false
@@ -242,7 +246,9 @@ export function Widget (config) {
         isOpen: false,
         isTyping: false,
         messageCount: params.messageCount,
-        unreadCount: 0
+        unreadCount: 0,
+        poweredByText: params.poweredByText,
+        poweredByHost: params.poweredByHost
       },
       mounted: function () {
         if (this.messages.length === 0) {
@@ -268,8 +274,8 @@ export function Widget (config) {
         close () {
           this.isOpen = false
         },
-        sendMessage () {
-          this.isOpen = false
+        sendMessage (text) {
+          this.$refs.widget.sendMessage(text)
         },
         onToggleVisibility (isClosed) {
           this.isOpen = !isClosed
@@ -399,8 +405,8 @@ export function Widget (config) {
     _parent.close()
   }
 
-  this.sendMessage = function (message) {
-    _parent.sendMessage(message)
+  this.sendMessage = function (text) {
+    _parent.sendMessage(text)
   }
 
   this.on = function (event, callback) {
