@@ -277,6 +277,9 @@ export function Widget (config) {
         sendMessage (text) {
           this.$refs.widget.sendMessage(text)
         },
+        isEmbedded () {
+          return this.position === 'embedded'
+        },
         onToggleVisibility (isClosed) {
           this.isOpen = !isClosed
           if (this.isOpen) {
@@ -411,5 +414,13 @@ export function Widget (config) {
 
   this.on = function (event, callback) {
     _eventBus.on(event, callback)
+  }
+
+  this.isEmbedded = function () {
+    return _parent.isEmbedded()
+  }
+
+  this.isOpen = function () {
+    return _parent.isOpen
   }
 }

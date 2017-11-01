@@ -110,7 +110,7 @@
     position: absolute;
     right: auto;
     bottom: 0.6em;
-    left: -0.9em;
+    left: -0.7em;
     height: 0;
     content: '';
     border: 6px solid transparent;
@@ -119,7 +119,7 @@
   }
 
   .chat-entry.remote .message-body::before {
-    right: -0.9em;
+    right: -0.7em;
     bottom: 0.6em;
     left: auto;
     border: 6px solid transparent;
