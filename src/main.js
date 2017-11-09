@@ -119,7 +119,7 @@ export function Widget (config) {
 
     _adapter.init(_adapterConfig)
         .then(json => {
-          console.debug('Adapter init returned:', json)
+          // console.debug('Adapter init returned:', json)
 
           if (typeof json !== 'object') {
             // an error ocurred
