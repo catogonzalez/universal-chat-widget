@@ -41,15 +41,15 @@ myWidget.close();
 
 ### Sample config
 
-```json
+```javascript
 {
-    "adapter": "ActionCable", # one of ActionCable or RocketChat (required)
-    "element": "#chat-widget",# css selector of element to replace in DOM when the chat widget renders (required)
-    "position": "bottom-right", # or embedded
+    "adapter": "ActionCable", // one of ActionCable or RocketChat (required)
+    "element": "//chat-widget",// css selector of element to replace in DOM when the chat widget renders (required)
+    "position": "bottom-right", // or embedded
     "showAvatars": true, 
     "allowUploads": true,
-    "poweredByText": "121 Services", # yes, you can change this :)
-	"poweredByHost": "https://121.services", # and this!
+    "poweredByText": "121 Services", // yes, you can change this :)
+	"poweredByHost": "https://121.services", // and this!
     "adapterConfig": {
         "backendUrl": "https://my-backend.co/cable",
         "initData": {
