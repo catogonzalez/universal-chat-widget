@@ -1,9 +1,7 @@
 {
-  "name": "chat-widget",
+  "name": "universal-chat-widget",
   "version": "1.0.0",
   "description": "Universal chat widget",
-  "author": "121 Services (devops@121.services)",
-  "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
@@ -96,5 +94,13 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "author": "Carlos Gonzalez (https://catogonzalez.wordpress.com/)",
+  "license": "MIT",
+  "homepage": "https://github.com/catogonzalez/universal-chat-widget",
+  "bugs": "https://github.com/catogonzalez/universal-chat-widget/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/catogonzalez/universal-chat-widget.git"
+  }
 }

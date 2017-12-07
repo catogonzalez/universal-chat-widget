@@ -14,10 +14,12 @@ import uidv4 from 'uuid/v4'
 export function Widget (config) {
   // config must be a json object with this configuration
   // *adapter: one of ActionCable or RocketChat
-  // *element: css selector of element to replace in DOM
+  // *element: css selector of element to replace in DOM when chat-widget renders
   // position: embedded|*bottom-right
   // showAvatars: *true|false
   // allowUploads: *true|false
+  // poweredByText: '121 Services',
+  // poweredByHost: 'https://121.services',
   // *adapterConfig: Object based on type of adapter. See ChatAdapterActionCable config as an example here:
   //    ChatAdapterActionCable.config:
   //    *backendUrl: 'http://localhost:3003/web'
@@ -80,7 +82,7 @@ export function Widget (config) {
   if (_deviceId === null || _deviceId === undefined) {
     // check if config data provides a user.id
     if (_adapterConfig && _adapterConfig.initData && _adapterConfig.initData.data && _adapterConfig.initData.data.user && _adapterConfig.initData.data.user.id) {
-      // TODO: implement user-merge in backend, when user.id id provided and localStorage.devideId id already set, user.id should survive the merge
+      // TODO: implement user-merge in backend, when user.id is provided and localStorage.devideId id already set, user.id should survive the merge
       _deviceId = _adapterConfig.initData.data.user.id
       localStorage.setItem('ucwDeviceId', _deviceId)
       initAdapter()
@@ -138,7 +140,7 @@ export function Widget (config) {
               unavailableMessage: json.unavailable_message || null
             }
             if (json.show_avatars !== undefined) {
-              // showAvatars: whatever comes from the backend superseeds the initial config of the widget
+              // showAvatars: whatever comes from the backend supersedes the initial config of the widget
               if (isFalsey(json.show_avatars)) {
                 widgetConfig.showAvatars = false
                 _widgetData.showAvatars = false
@@ -148,7 +150,7 @@ export function Widget (config) {
               }
             }
             if (json.allow_uploads !== undefined) {
-              // allowUploads: whatever comes from the backend superseeds the initial config of the widget
+              // allowUploads: whatever comes from the backend supersedes the initial config of the widget
               if (isFalsey(json.allow_uploads)) {
                 widgetConfig.allowUploads = false
                 _widgetData.allowUploads = false
@@ -158,7 +160,7 @@ export function Widget (config) {
               }
             }
             if (json.is_enabled !== undefined) {
-              // isEnabled: defaults to true. Whatever comes from the backend superseeds that default
+              // isEnabled: defaults to true. Whatever comes from the backend supersedes that default
               if (isFalsey(json.is_enabled)) {
                 widgetConfig.isEnabled = false
                 _widgetData.isEnabled = false
