@@ -7,7 +7,7 @@
         <div class="thumbnail"><img :src="slide.image_url" alt="Image not found"/></div>
         <h1 class="title">{{slide.title}}</h1>
         <p class="description">{{slide.subtitle}}</p>
-        <chat-buttons v-if="slide.buttons !== null && slide.buttons !==''"
+        <chat-buttons v-if="slide.buttons !== null && slide.buttons !=='' && slide.buttons.length > 0"
                       :buttons="slide.buttons"
                       @postback="onPostback">
         </chat-buttons>

@@ -13,6 +13,9 @@ The UCW design decouples the presentation and backend communication layers with 
 
 If you need to connect to a different backend, create your own *adapter* and start using live web chat to that platform. We are welcoming contributors who can work on adapters for any chat platform including the popular Slack and Hipchat. In [our wiki](https://github.com/catogonzalez/universal-chat-widget/wiki), we will write instructions on how to build adapters, although it is very easy if you look at the code for the existing adapters. 
 
+## Prerequisites
+You will need a backend server to respond to user messages: it may be a rails API/app that implements Action Cable or an instance of Rocket.Chat
+
 ## Getting Started
 
 ```bash
@@ -36,24 +39,24 @@ myWidget.isEmbedded();
 myWidget.close();
 ```
 
-## Sample config
+### Sample config
 
 ```json
 {
-    adapter: 'ActionCable', # one of ActionCable or RocketChat (required)
-    element: '#chat-widget',# css selector of element to replace in DOM when the chat widget renders (required)
-    position: 'bottom-right', # or embedded
-    showAvatars: true, 
-    allowUploads: true,
-    poweredByText: '121 Services', # yes, you can change this :)
-	poweredByHost: 'https://121.services', # and this!
-    adapterConfig: {
-        backendUrl: 'https://my-backend.co/cable',
-        initData: {
-            endpoint: '/start',
-            method: 'post',
-            data: {
-                appId: 'c683b9da-c908-4407-97dd-91e6bf2552d1'
+    "adapter": "ActionCable", # one of ActionCable or RocketChat (required)
+    "element": "#chat-widget",# css selector of element to replace in DOM when the chat widget renders (required)
+    "position": "bottom-right", # or embedded
+    "showAvatars": true, 
+    "allowUploads": true,
+    "poweredByText": "121 Services", # yes, you can change this :)
+	"poweredByHost": "https://121.services", # and this!
+    "adapterConfig": {
+        "backendUrl": "https://my-backend.co/cable",
+        "initData": {
+            "endpoint": "/start",
+            "method": "post",
+            "data": {
+                "appId": "c683b9da-c908-4407-97dd-91e6bf2552d1"
             }
         }
     }

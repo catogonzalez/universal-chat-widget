@@ -39,7 +39,12 @@
       <transition name="fade">
         <div id="chat-121-avatar" v-show="!isVisible">
           <span class="chat-message-counter" v-if="unreadCount > 0">{{unreadCount}}</span>
-          <img :src=avatarUrl @click="toggleVisibility"/>
+          <template v-if="avatarUrl !== null">
+            <img :src=avatarUrl @click="toggleVisibility"/>
+          </template>
+          <template v-if="avatarUrl === null">
+            <chat-bubble @toggleVisibility="toggleVisibility"/>
+          </template>
         </div>
       </transition>
     </template>
@@ -50,12 +55,14 @@
   import uidv4 from 'uuid/v4'
   import ChatMessage from './ChatMessage'
   import TypingIndicator from './TypingIndicator'
+  import ChatBubble from './ChatBubble'
 
   export default {
     name: 'ChatWidget',
     components: {
       ChatMessage,
-      TypingIndicator
+      TypingIndicator,
+      ChatBubble
     },
     props: {
       position: {
@@ -84,7 +91,7 @@
       },
       avatarUrl: {
         type: String,
-        default: 'https://storage.googleapis.com/static-121/diego-blink.gif'
+        default: null
       },
       newUsersIntro: {
         type: String,

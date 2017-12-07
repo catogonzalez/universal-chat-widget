@@ -11,7 +11,7 @@
         {{message.text}}
       </p>
     </div>
-    <chat-carousel v-if="message.elements !== undefined && message.elements !== null && message.elements !==''"
+    <chat-carousel v-if="message.elements !== undefined && message.elements !== null && message.elements !=='' && message.elements.length > 0"
                    :slides="message.elements"></chat-carousel>
     <chat-buttons v-if="message.buttons !== undefined && message.buttons !== null && message.buttons !==''"
                   :buttons="message.buttons"

@@ -130,7 +130,7 @@ export function Widget (config) {
             var widgetConfig = {
               name: json.name || 'chat',
               displayName: json.display_name || 'Chat',
-              avatarUrl: json.avatar_url || 'https://storage.googleapis.com/static-121/diego-blink.gif',
+              avatarUrl: json.avatar_url || null,
               newUsersIntro: json.new_users_intro || '',
               user: json.user || {id: _deviceId},
               lastMessages: json.last_messages || [],
