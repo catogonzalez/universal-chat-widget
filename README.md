@@ -11,7 +11,7 @@ The UCW design decouples the presentation and backend communication layers with 
 * Rails Action Cable [chat-adapter-action-cable](https://github.com/catogonzalez/chat-adapter-action-cable)
 * Rocket Chat [chat-adapter-rocketchat](https://github.com/catogonzalez/chat-adapter-rocketchat)
 
-If you need to connect to a different backend, create your own *adapter* and start using live web chat to that platform. We are welcoming contributors who can work on adapters for any chat platform including the popular Slack and Hipchat. In [our wiki](https://github.com/catogonzalez/universal-chat-widget/wiki), we will write instructions on how to build adapters, although it is very easy if you look at the code for the existing adapters. 
+If you need to connect to a different backend, create your own *adapter* and start using live web chat to that platform. We are welcoming contributors who can work on adapters for any chat platform including the popular Slack and Hipchat. In [our wiki](https://github.com/catogonzalez/universal-chat-widget/wiki/Creating-new-adapters-to-connect-to-a-different-backend), we wrote instructions on how to build adapters, although it is very easy if you look at the code for the existing adapters. 
 
 ## Prerequisites
 You will need a backend server to respond to user messages: it may be a rails API/app that implements Action Cable or an instance of Rocket.Chat
